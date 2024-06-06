@@ -15,6 +15,7 @@
     - [3.5.3. Converting static HTML page to Wordpress](#353-converting-static-html-page-to-wordpress)
     - [3.5.4. Interior page template](#354-interior-page-template)
     - [3.5.5. Parent and children pages](#355-parent-and-children-pages)
+    - [3.5.6. Links to the subpages](#356-links-to-the-subpages)
 
 
 # 1. Purpose
@@ -179,3 +180,22 @@ footer.php
 
 
 ### 3.5.5. Parent and children pages
+
+Create new page - page attributes - parent.
+Conditional if the page has a parent page.
+
+```php
+    <?php
+    $theParent = wp_get_post_parent_id(get_the_ID());
+        if ($theParent) { ?>
+        <div class="metabox metabox--position-up metabox--with-home-link">
+            <p>
+            <a class="metabox__blog-home-link" href="<?php the_permalink($theParent) ?>"><i class="fa fa-home" aria-hidden="true"></i> Back to <?php echo get_the_title($theParent)?></a> <span class="metabox__main"><?php the_title() ?></span>
+            </p>
+        </div>
+        <?php
+        }
+    ?>
+```
+
+### 3.5.6. Links to the subpages
