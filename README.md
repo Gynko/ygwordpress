@@ -9,6 +9,7 @@
   - [3.2. Creating a new theme](#32-creating-a-new-theme)
   - [3.3. PHP functions](#33-php-functions)
   - [3.4. PHP arrays](#34-php-arrays)
+  - [3.5. Wordpress specific PHP](#35-wordpress-specific-php)
 
 
 # 1. Purpose
@@ -61,3 +62,41 @@ Wordpress comes with its own set of functions, for example:
 ```
 
 ## 3.4. PHP arrays
+
+```php
+<?php
+    $names = array("yoann", "Nils", "Ingvild");
+    $count = 0;
+    while ($count <= 2){
+        echo "<li>my name is $names[$count]</li>";
+        $count++;
+    }
+?>
+```
+
+## 3.5. Wordpress specific PHP
+Here we get a hold of the posts and show the title and content.
+We make the title be a link so that the posts get their own single page.
+```php
+<?php
+    while(have_posts()){
+        the_post(); ?>
+        <h2><a href="<?php the_permalink() ?>"><?php the_title()?></a></h2>
+        <p><?php the_content()?></p>
+        <hr>
+        <?php 
+    }
+?>
+```
+But for the single page we need to create a file called single.php, and we can custom by for example removing the a tag
+````php
+<?php
+    while(have_posts()){
+        the_post(); ?>
+        <h2><?php the_title()?></h2>
+        <p><?php the_content()?></p>
+        <hr>
+        <?php 
+    }
+?>
+```
