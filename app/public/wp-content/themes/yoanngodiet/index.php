@@ -1,1 +1,7 @@
-This is our amazing custom theme w00h00
+<?php
+    function hello () {
+        echo "<p>Hello this is my first function</p>";
+    }
+  hello();
+  hello();
+?>
