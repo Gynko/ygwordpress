@@ -8,6 +8,7 @@
   - [3.1. PHP](#31-php)
   - [3.2. Creating a new theme](#32-creating-a-new-theme)
   - [3.3. PHP functions](#33-php-functions)
+  - [3.4. PHP arrays](#34-php-arrays)
 
 
 # 1. Purpose
@@ -45,10 +46,18 @@ echo 5*5
 
 ```php
 <?php
-    function hello () {
-        echo "<p>Hello this is my first function</p>";
+    function greet ($name, $color) {
+        echo "<p>My name is $name and my favourite color is $color</p>";
     }
-  hello();
-  hello();
+    greet("Ingvild", "green");
+    greet("Nils", "blue");
 ?>
 ```
+
+Wordpress comes with its own set of functions, for example:
+```php
+<h1><?php bloginfo("name"); ?></h1>
+<p><?php bloginfo("description");?></p>
+```
+
+## 3.4. PHP arrays

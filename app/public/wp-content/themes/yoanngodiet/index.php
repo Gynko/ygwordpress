@@ -1,7 +1,11 @@
 <?php
-    function hello () {
-        echo "<p>Hello this is my first function</p>";
+    function greet ($name, $color) {
+        echo "<p>My name is $name and my favourite color is $color</p>";
     }
-  hello();
-  hello();
+    greet("Ingvild", "green");
+    greet("Nils", "blue");
+
 ?>
+
+<h1><?php bloginfo("name"); ?></h1>
+<p><?php bloginfo("description");?></p>
