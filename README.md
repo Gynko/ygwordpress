@@ -4,16 +4,24 @@
 
 - [1. Purpose](#1-purpose)
 - [2. Installation](#2-installation)
+- [3. PHP](#3-php)
 
 
 # 1. Purpose
 
 This is my personal website.
-
 I made it to learn myself Wordpress.
 
 
 # 2. Installation
 1. Installing Local
 
-
+# 3. PHP
+PHP is executed on the server.
+```php
+<?php 
+echo 2 + 2
+?>
+<h1>Hellooo</h1>
+<p>Not bad</p>
+```
