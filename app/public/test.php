@@ -1,7 +1,9 @@
 <?php 
-echo 2 + 2
-
-
+    echo 2 + 2;
+    $myname = "Yoann";
 ?>
-<h1>Hellooo</h1>
-<p>Not bad</p>
+<h1>Hellooo <?php echo $myname ?></h1>
+<?php 
+echo 5*5
+?>
+<p>Not bad, <?php echo $myname ?></p>
