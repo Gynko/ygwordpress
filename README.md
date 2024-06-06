@@ -9,7 +9,10 @@
   - [3.2. Creating a new theme](#32-creating-a-new-theme)
   - [3.3. PHP functions](#33-php-functions)
   - [3.4. PHP arrays](#34-php-arrays)
-  - [3.5. Wordpress specific PHP](#35-wordpress-specific-php)
+  - [3.5. Introduction to Wordpress specific PHP](#35-introduction-to-wordpress-specific-php)
+    - [3.5.1. Posts, post, pages](#351-posts-post-pages)
+    - [3.5.2. Header and footer](#352-header-and-footer)
+    - [3.5.3. Converting static HTML page to Wordpress](#353-converting-static-html-page-to-wordpress)
 
 
 # 1. Purpose
@@ -74,7 +77,8 @@ Wordpress comes with its own set of functions, for example:
 ?>
 ```
 
-## 3.5. Wordpress specific PHP
+## 3.5. Introduction to Wordpress specific PHP
+### 3.5.1. Posts, post, pages
 Here we get a hold of the posts and show the title and content.
 We make the title be a link so that the posts get their own single page.
 ```php
@@ -89,14 +93,58 @@ We make the title be a link so that the posts get their own single page.
 ?>
 ```
 But for the single page we need to create a file called single.php, and we can custom by for example removing the a tag
-````php
+```php
 <?php
     while(have_posts()){
         the_post(); ?>
         <h2><?php the_title()?></h2>
         <p><?php the_content()?></p>
-        <hr>
         <?php 
     }
 ?>
 ```
+If we create a new page, we notice that the new page seem to be powered by the index.php template. But we can add a page.php
+```php
+<?php
+    while(have_posts()){
+        the_post(); ?>
+        <h1>This is a page</h1>
+        <h2><?php the_title()?></h2>
+        <p><?php the_content()?></p>
+        <?php 
+    }
+?>
+```
+
+### 3.5.2. Header and footer
+We create a header.php and footer.php. 
+
+header
+```php
+<!DOCTYPE html>
+<head>
+    <?php wp_head(); ?>
+</head>
+<body>
+    <<h1>YoyO</h1>>
+```
+
+functions.php
+```php
+<?php
+    function yoanngodiet_files(){
+        wp_enqueue_style("main_styles", get_stylesheet_uri());
+    };
+    add_action("wp_enqueue_scripts", "yoanngodiet_files");
+?>
+```
+
+footer.php
+```php
+<h1>Greetings from footer.php</h1>
+<?php wp_footer(); ?>
+</body>
+</html>
+```
+
+### 3.5.3. Converting static HTML page to Wordpress
