@@ -20,6 +20,8 @@
     - [3.5.8. Navigation menus](#358-navigation-menus)
     - [3.5.9. Building the blog section](#359-building-the-blog-section)
     - [3.5.10. Pagination](#3510-pagination)
+    - [3.5.11. Blog archives](#3511-blog-archives)
+    - [3.5.12. The almighty Custom queries](#3512-the-almighty-custom-queries)
 
 
 # 1. Purpose
@@ -430,3 +432,85 @@ Default is 10. Settings, reading.
 ```php
   echo paginate_links();
 ```
+
+### 3.5.11. Blog archives
+
+When clicking on a category or an author, we will get to an category archive, or author archive.
+
+```php
+<?php
+get_header();
+?>
+<div class="page-banner">
+    <div class="page-banner__bg-image" style="background-image: url(<?php echo get_theme_file_uri("/images/ocean.jpg"); ?>"></div>
+    <div class="page-banner__content container container--narrow">
+        <h1 class="page-banner__title"><?php the_archive_title();?></h1>
+        <div class="page-banner__intro">
+            <p>Keep up with our latest news</p>
+        </div>
+    </div>
+</div>
+```
+
+Date archives - Exhausting with if statements
+
+```php
+<?php
+get_header();
+?>
+<div class="page-banner">
+    <div class="page-banner__bg-image" style="background-image: url(<?php echo get_theme_file_uri("/images/ocean.jpg"); ?>"></div>
+    <div class="page-banner__content container container--narrow">
+        <h1 class="page-banner__title"><?php the_archive_title() ?></h1>
+        <div class="page-banner__intro">
+            <p>Keep up with our latest news</p>
+        </div>
+    </div>
+</div>
+```
+
+Adding description.
+For author, this is set by biographical info.
+For category it is the Posts/categories/Description
+
+```php
+<div class="page-banner">
+    <div class="page-banner__bg-image" style="background-image: url(<?php echo get_theme_file_uri("/images/ocean.jpg"); ?>"></div>
+    <div class="page-banner__content container container--narrow">
+        <h1 class="page-banner__title"><?php the_archive_title() ?></h1>
+        <div class="page-banner__intro">
+            <p><?php the_archive_description() ?></p>
+        </div>
+    </div>
+</div>
+```
+
+### 3.5.12. The almighty Custom queries
+
+They allow us to get the content we want, wherever we want.
+
+Note the wp_reset_postdata();
+
+```php
+<?php
+$homepagePosts = new WP_Query(array(
+    "posts_per_page" => 2
+));
+
+while ($homepagePosts->have_posts()) {
+    $homepagePosts->the_post(); ?>
+    <div class="event-summary">
+        <a href="<?php the_permalink() ?>" class="event-summary__date event-summary__date--beige t-center" href="#">
+            <span class="event-summary__month"><?php the_time("M") ?></span>
+            <span class="event-summary__day"><?php the_time("d") ?></span>
+        </a>
+        <div class="event-summary__content">
+            <h5 class="event-summary__title headline headline--tiny"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></h5>
+            <p><?php echo wp_trim_words(get_the_content(), "18") ?><a href="<?php the_permalink() ?>" class="nu gray">Read more</a></p>
+        </div>
+    </div>
+<?php wp_reset_postdata();
+}
+?>
+```
+
