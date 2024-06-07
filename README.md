@@ -19,6 +19,7 @@
     - [3.5.7. Extra head tips](#357-extra-head-tips)
     - [3.5.8. Navigation menus](#358-navigation-menus)
     - [3.5.9. Building the blog section](#359-building-the-blog-section)
+    - [3.5.10. Pagination](#3510-pagination)
 
 
 # 1. Purpose
@@ -420,4 +421,12 @@ get_header();
 <?php
 get_footer();
 ?>
+```
+
+### 3.5.10. Pagination
+
+Default is 10. Settings, reading.
+
+```php
+  echo paginate_links();
 ```
