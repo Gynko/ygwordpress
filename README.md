@@ -297,8 +297,10 @@ Many new classes
 
 ### 3.5.8. Navigation menus
 
-We need to add the menu
+We need to add the menu.
+
 ```php
+<?php
 <?php
 function yoanngodiet_files()
 {
@@ -311,9 +313,62 @@ function yoanngodiet_files()
 function university_features()
 {
     register_nav_menu("headerMenuLocation", "Header Menu Location");
+    register_nav_menu("footerMenuLocationOne", "Footer Menu Location One");
+    register_nav_menu("footerMenuLocationTwo", "Footer Menu Location Two");
     add_theme_support("title-tag");
 }
 add_action("wp_enqueue_scripts", "yoanngodiet_files");
 add_action("after_setup_theme", "university_features");
 
+
 ```
+
+Also thick Display location
+
+```php
+<nav class="main-navigation">
+    <?php
+    wp_nav_menu(array(
+        "theme_location" => "headerMenuLocation"
+    ))
+    ?>
+</nav>
+```
+
+```php
+      <div class="site-footer__col-two-three-group">
+        <div class="site-footer__col-two">
+          <h3 class="headline headline--small">Explore</h3>
+          <nav class="nav-list">
+            <ul>
+              <?php
+              wp_nav_menu(array(
+                "theme_location" => "footerMenuLocationOne"
+              ))
+              ?>
+              <!--               <li><a href="<?php echo site_url("/about-me") ?>">About me</a></li>
+              <li><a href="#">Programs</a></li>
+              <li><a href="#">Events</a></li>
+              <li><a href="#">Campuses</a></li> -->
+            </ul>
+          </nav>
+        </div>
+
+        <div class="site-footer__col-three">
+          <h3 class="headline headline--small">Learn</h3>
+          <nav class="nav-list">
+            <ul>
+              <?php
+              wp_nav_menu(array(
+                "theme_location" => "footerMenuLocationTwo"
+              ))
+              ?>
+              <!--               <li><a href="#">Legal</a></li>
+              <li><a href="<?php echo site_url("/privacy-policy") ?>">Privacy</a></li>
+              <li><a href="#">Careers</a></li> -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+```
+Importantly, wordpress creates new classes along, that can be targeted in CSS
