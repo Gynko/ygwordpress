@@ -22,6 +22,7 @@
     - [3.5.10. Pagination](#3510-pagination)
     - [3.5.11. Blog archives](#3511-blog-archives)
     - [3.5.12. The almighty Custom queries](#3512-the-almighty-custom-queries)
+    - [3.5.13. Posts types](#3513-posts-types)
 
 
 # 1. Purpose
@@ -513,4 +514,41 @@ while ($homepagePosts->have_posts()) {
 }
 ?>
 ```
+
+### 3.5.13. Posts types
+
+By default there are 2 post types: posts and pages
+```bash
+http://yoanngodiet.local/wp-admin/edit.php?post_type=page
+```
+
+We want to create Events, Programs, Professors
+
+https://developer.wordpress.org/resource/dashicons/#businessperson
+
+Need to make it a Must Use Plugin. Create mu-plugins folder in wp-content.
+
+```php
+<?php function university_post_types()
+{
+    register_post_type("event", array(
+        "public" => true,
+        "show_in_rest" => true,
+        "menu_icon" => "dashicons-calendar-alt",
+        "labels" => array(
+            "name" => "Events",
+            "add_new_item" => "Add new Event",
+            "add_new" => "Add new Event",
+            "edit_item" => "Edit Event",
+            "all_items" => "All Events",
+            "singular_name" => "Event"
+        )
+    ));
+}
+add_action("init", "university_post_types");
+```
+
+https://developer.wordpress.org/reference/functions/register_post_type/
+
+https://developer.wordpress.org/reference/functions/get_post_type_labels/
 
