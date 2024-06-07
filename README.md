@@ -18,6 +18,7 @@
     - [3.5.6. Menu of children page links](#356-menu-of-children-page-links)
     - [3.5.7. Extra head tips](#357-extra-head-tips)
     - [3.5.8. Navigation menus](#358-navigation-menus)
+    - [3.5.9. Building the blog section](#359-building-the-blog-section)
 
 
 # 1. Purpose
@@ -372,3 +373,51 @@ Also thick Display location
       </div>
 ```
 Importantly, wordpress creates new classes along, that can be targeted in CSS
+
+If we don't have these new classes
+
+### 3.5.9. Building the blog section
+
+2 new pages: Home and Blog
+
+Now in settings / reading, we can set a HomePage and a Posts Page
+
+Then a front-page.php
+
+Here the index.php for blog
+```php
+<?php
+get_header();
+?>
+<div class="page-banner">
+  <div class="page-banner__bg-image" style="background-image: url(<?php echo get_theme_file_uri("/images/ocean.jpg"); ?>"></div>
+  <div class="page-banner__content container container--narrow">
+    <h1 class="page-banner__title">Welcome to our blog</h1>
+    <div class="page-banner__intro">
+      <p>Keep up with our latest news</p>
+    </div>
+  </div>
+</div>
+<div class="container container--narrow page-section">
+  <?php
+  while (have_posts()) {
+    the_post(); ?>
+    <div class="post-item">
+      <h2 class="headline headline--medium headline--post-title"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></h2>
+      <div class="metabox">
+        <p>Posted by <?php the_author_posts_link() ?> on <?php the_time("F j, Y") ?> in <?php echo get_the_category_list(", ") ?></p>
+      </div>
+
+      <div class="generic-content">
+        <?php the_excerpt() ?>
+        <a class="btn btn--blue" href="<?php the_permalink() ?>">Continue reading</a>
+      </div>
+    </div>
+  <?php
+  }
+  ?>
+</div>
+<?php
+get_footer();
+?>
+```
