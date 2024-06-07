@@ -15,7 +15,7 @@
     - [3.5.3. Converting static HTML page to Wordpress](#353-converting-static-html-page-to-wordpress)
     - [3.5.4. Interior page template](#354-interior-page-template)
     - [3.5.5. Parent and children pages](#355-parent-and-children-pages)
-    - [3.5.6. Links to the subpages](#356-links-to-the-subpages)
+    - [3.5.6. Menu of children page links](#356-menu-of-children-page-links)
 
 
 # 1. Purpose
@@ -198,4 +198,57 @@ Conditional if the page has a parent page.
     ?>
 ```
 
-### 3.5.6. Links to the subpages
+
+### 3.5.6. Menu of children page links
+
+We need an associative array
+
+```php
+&animalSounds = array(
+    "car" => "meow",
+    "dog" => "bark"
+    );
+    echo $animalSounds["dog"];
+```
+
+```php
+<div class="container container--narrow page-section">
+    <?php
+    $theParent = wp_get_post_parent_id(get_the_ID());
+    if ($theParent) { ?>
+        <div class="metabox metabox--position-up metabox--with-home-link">
+            <p>
+                <a class="metabox__blog-home-link" href="<?php the_permalink($theParent) ?>"><i class="fa fa-home" aria-hidden="true"></i> Back to <?php echo get_the_title($theParent) ?></a> <span class="metabox__main"><?php the_title() ?></span>
+            </p>
+        </div>
+    <?php
+    }
+    ?>
+    <?php
+    $testArray = get_pages(array(
+        "child_of" => get_the_ID()
+    ));
+    if ($theParent or $testArray) { ?>
+        <div class="page-links">
+            <h2 class="page-links__title"><a href="<?php echo the_permalink($theParent) ?>"><?php echo get_the_title($theParent) ?></a></h2>
+            <ul class="min-list">
+                <?php
+                if ($theParent) {
+                    $findChildrenOf = $theParent;
+                } else {
+                    $findChildrenOf = get_the_ID();
+                }
+                wp_list_pages(array(
+                    "title_li" => NULL,
+                    "child_of" =>  $findChildrenOf
+                ));
+                ?>
+
+            </ul>
+        </div>
+    <?php } ?>
+    <div class="generic-content">
+        <?php the_content() ?>
+    </div>
+</div>
+```
