@@ -22,7 +22,7 @@
     - [3.5.10. Pagination](#3510-pagination)
     - [3.5.11. Blog archives](#3511-blog-archives)
     - [3.5.12. The almighty Custom queries](#3512-the-almighty-custom-queries)
-    - [3.5.13. Posts types](#3513-posts-types)
+    - [3.5.13. Posts types : events](#3513-posts-types--events)
 
 
 # 1. Purpose
@@ -515,7 +515,7 @@ while ($homepagePosts->have_posts()) {
 ?>
 ```
 
-### 3.5.13. Posts types
+### 3.5.13. Posts types : events
 
 By default there are 2 post types: posts and pages
 ```bash
@@ -552,3 +552,4 @@ https://developer.wordpress.org/reference/functions/register_post_type/
 
 https://developer.wordpress.org/reference/functions/get_post_type_labels/
 
+To display them, we use wp query - for permalinks we need to go to settings / permalinks and set to day and name
