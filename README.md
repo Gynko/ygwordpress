@@ -23,6 +23,9 @@
     - [3.5.11. Blog archives](#3511-blog-archives)
     - [3.5.12. The almighty Custom queries](#3512-the-almighty-custom-queries)
     - [3.5.13. Posts types : events](#3513-posts-types--events)
+    - [3.5.14. Misc updates](#3514-misc-updates)
+    - [3.5.15. Custom fields](#3515-custom-fields)
+  - [3.6. Summary](#36-summary)
 
 
 # 1. Purpose
@@ -661,3 +664,42 @@ get_header();
 get_footer();
 ?>
 ```
+
+### 3.5.14. Misc updates
+
+Excerpts: you may want handcrafted excerpts
+
+```php
+<?php
+$homepagePosts = new WP_Query(array(
+    "posts_per_page" => 2
+));
+
+while ($homepagePosts->have_posts()) {
+    $homepagePosts->the_post(); ?>
+    <div class="event-summary">
+        <a href="<?php the_permalink() ?>" class="event-summary__date event-summary__date--beige t-center" href="#">
+            <span class="event-summary__month"><?php the_time("M") ?></span>
+            <span class="event-summary__day"><?php the_time("d") ?></span>
+        </a>
+        <div class="event-summary__content">
+            <h5 class="event-summary__title headline headline--tiny"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></h5>
+            <p><?php if (has_excerpt()) {
+                    echo get_the_excerpt();
+                } else {
+                    echo wp_trim_words(get_the_content(), "18");
+                } ?><a href="<?php the_permalink() ?>" class="nu gray">Read more</a></p>
+        </div>
+    </div>
+<?php wp_reset_postdata();
+}
+?>
+```
+
+### 3.5.15. Custom fields
+
+## 3.6. Summary
+
+1. The loop
+2. the_title(), the_content(), the_post()
+3. Adding stylesheets in functions.php
