@@ -1,6 +1,8 @@
 <?php function university_post_types()
 {
     register_post_type("event", array(
+        "rewrite" => array("slug" => "events"),
+        "has_archive" => true,
         "public" => true,
         "show_in_rest" => true,
         "menu_icon" => "dashicons-calendar-alt",
@@ -10,7 +12,7 @@
             "add_new" => "Add new Event",
             "edit_item" => "Edit Event",
             "all_items" => "All Events",
-            "singular_name" => "Event"
+            "singular_name" => "Event",
         )
     ));
 }
