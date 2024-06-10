@@ -25,7 +25,7 @@
     - [3.5.13. Posts types : events](#3513-posts-types--events)
     - [3.5.14. Misc updates](#3514-misc-updates)
     - [3.5.15. Custom fields](#3515-custom-fields)
-  - [3.6. Summary](#36-summary)
+    - [3.5.16. Manipulating default url based queries](#3516-manipulating-default-url-based-queries)
 
 
 # 1. Purpose
@@ -698,8 +698,65 @@ while ($homepagePosts->have_posts()) {
 
 ### 3.5.15. Custom fields
 
-## 3.6. Summary
+```php
+"supports" => array("title", "editor", "excerpt", "custom-fields"),
+```
 
-1. The loop
-2. the_title(), the_content(), the_post()
-3. Adding stylesheets in functions.php
+then 3 dots, preferences, custom fields.
+
+2 main plugins:
+
+1. ACF
+2. CMB2
+
+Add plugin
+Add field group
+Event_date
+Location rule
+
+```php
+<a class="event-summary__date t-center" href="#">
+    <span class="event-summary__month"><?php
+        $eventDate = new DateTime(get_field("event_date"));
+        echo $eventDate->format("M");
+        ?></span>
+    <span class="event-summary__day"><?php
+        echo $eventDate->format("d");
+        ?></span>
+</a>
+```
+
+sorting
+
+```php
+$homepageEvents = new WP_Query(array(
+    "posts_per_page" => 2,
+    "post_type" => "event",
+    "orderby" => "meta_value_num",
+    "meta_key" => "event_date",
+    "order" => "ASC"
+));
+```
+
+Removing past, we need meta query
+```php
+<?php
+$today = date("Ymd");
+$homepageEvents = new WP_Query(array(
+    "posts_per_page" => 2,
+    "post_type" => "event",
+    "orderby" => "meta_value_num",
+    "meta_key" => "event_date",
+    "order" => "ASC",
+    "meta_query" => array(
+        array(
+            "key" => "event_date",
+            "compare" => ">=",
+            "value" => $today,
+            "type" => "numeric"
+        )
+    )
+));
+```
+
+### 3.5.16. Manipulating default url based queries

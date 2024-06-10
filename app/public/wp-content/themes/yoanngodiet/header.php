@@ -21,7 +21,7 @@
                         <li <?php if (is_page("about-me") or wp_get_post_parent_id(0) == 12) echo 'class="current-menu-item"' ?>><a href="<?php echo site_url("/about-me") ?>">About me</a></li>
                         <li><a href="#">CV</a></li>
                         <li><a href="#">Projects</a></li>
-                        <li><a href="#">Events</a></li>
+                        <li <?php if (get_post_type() == "event") echo 'class="current-menu-item"' ?>><a href="<?php echo get_post_type_archive_link("event") ?>">Events</a></li>
                         <li <?php if (get_post_type() == "post") echo 'class="current-menu-item"' ?>><a href="<?php echo site_url("/blog") ?>">Blog</a></li>
                     </ul>
                 </nav>
