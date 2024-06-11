@@ -26,6 +26,7 @@
     - [3.5.14. Misc updates](#3514-misc-updates)
     - [3.5.15. Custom fields](#3515-custom-fields)
     - [3.5.16. Manipulating default url based queries](#3516-manipulating-default-url-based-queries)
+    - [3.5.17. Pasts events - custom query pagination](#3517-pasts-events---custom-query-pagination)
 
 
 # 1. Purpose
@@ -760,3 +761,103 @@ $homepageEvents = new WP_Query(array(
 ```
 
 ### 3.5.16. Manipulating default url based queries
+
+For the archive events page, to sort them:
+
+```php
+function adjust_queries($query)
+{
+    $today = date("Ymd");
+    if (!is_admin() and is_post_type_archive("event") and $query->is_main_query()) {
+        $query->set("meta_key", "event_date");
+        $query->set("orderby", "meta_value_num");
+        $query->set("order", "ASC");
+        $query->set("meta_query", array(
+            array(
+                "key" => "event_date",
+                "compare" => ">=",
+                "value" => $today,
+                "type" => "numeric"
+            )
+        ));
+    }
+}
+add_action("pre_get_posts", "adjust_queries");
+```
+
+### 3.5.17. Pasts events - custom query pagination
+
+New page in admin. Then page-past-events.php
+
+Pagination will work only with default queries that are tied to the url, so have to do this.
+
+Additionaly, add that it is pages
+
+```php
+<?php
+get_header();
+?>
+<div class="page-banner">
+    <div class="page-banner__bg-image" style="background-image: url(<?php echo get_theme_file_uri("/images/ocean.jpg"); ?>"></div>
+    <div class="page-banner__content container container--narrow">
+        <h1 class="page-banner__title">Past Events</h1>
+        <div class="page-banner__intro">
+            <p>A recap of our past events</p>
+        </div>
+    </div>
+</div>
+<div class="container container--narrow page-section">
+    <?php
+    $today = date("Ymd");
+    $pastEvents = new WP_Query(array(
+        "paged" => get_query_var("paged", 1),
+        "posts_per_page" => "2",
+        "post_type" => "event",
+        "orderby" => "meta_value_num",
+        "meta_key" => "event_date",
+        "order" => "ASC",
+        "meta_query" => array(
+            array(
+                "key" => "event_date",
+                "compare" => "<",
+                "value" => $today,
+                "type" => "numeric"
+            )
+        )
+    ));
+
+
+    while ($pastEvents->have_posts()) {
+        $pastEvents->the_post(); ?>
+        <div class="event-summary">
+            <a class="event-summary__date t-center" href="#">
+                <span class="event-summary__month"><?php
+                                                    $eventDate = new DateTime(get_field("event_date"));
+                                                    echo $eventDate->format("M");
+                                                    ?></span>
+                <span class="event-summary__day"><?php
+                                                    echo $eventDate->format("d");
+                                                    ?></span>
+            </a>
+            <div class="event-summary__content">
+                <h5 class="event-summary__title headline headline--tiny">
+                    <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                </h5>
+                <p>
+                    <?php echo wp_trim_words(get_the_content(), 18); ?>
+                    <a href="<?php the_permalink(); ?>" class="nu gray">Read more</a>
+                </p>
+            </div>
+        </div>
+    <?php
+    }
+    echo paginate_links(array(
+        "total" => $pastEvents->max_num_pages
+    ));
+    ?>
+
+</div>
+<?php
+get_footer();
+?>
+```
