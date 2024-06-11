@@ -27,6 +27,7 @@
     - [3.5.15. Custom fields](#3515-custom-fields)
     - [3.5.16. Manipulating default url based queries](#3516-manipulating-default-url-based-queries)
     - [3.5.17. Pasts events - custom query pagination](#3517-pasts-events---custom-query-pagination)
+    - [3.5.18. The program posts types - relationships between content posts](#3518-the-program-posts-types---relationships-between-content-posts)
 
 
 # 1. Purpose
@@ -791,7 +792,6 @@ New page in admin. Then page-past-events.php
 
 Pagination will work only with default queries that are tied to the url, so have to do this.
 
-Additionaly, add that it is pages
 
 ```php
 <?php
@@ -861,3 +861,6 @@ get_header();
 get_footer();
 ?>
 ```
+
+### 3.5.18. The program posts types - relationships between content posts
+
