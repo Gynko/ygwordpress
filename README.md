@@ -957,5 +957,18 @@ function university_features()
 ```php
 register_post_type("professor", array(
     "show_in_rest" => true,
-    "supports" => array("title", "editor", "excerpt", "thumbnail"),
+    "supports" => array("title", "editor", "excerpt", "thumbnail")
+)
+);
 ```
+5. Wordpress creates automatically different size for the images that we upload - And we can ask wordpress to generate additional ones. In function.php:
+```php
+function university_features()
+{
+    add_theme_support("title-tag");
+    add_theme_support("post-thumbnails");
+    add_image_size("professorLandscape", 400, 260, true);
+    add_image_size("professorPortrait", 480, 650, true);
+}
+```
+6. Not retroactive - a plugin can do this: regenerate thumbnails
