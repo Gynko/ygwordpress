@@ -952,3 +952,10 @@ function university_features()
     add_theme_support("post-thumbnails");
 }
 ```
+3. It is now enabled for blog-posts, but not for custom-posts
+4. go to mu_plugins
+```php
+register_post_type("professor", array(
+    "show_in_rest" => true,
+    "supports" => array("title", "editor", "excerpt", "thumbnail"),
+```

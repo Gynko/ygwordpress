@@ -41,7 +41,7 @@
     // Professor types
     register_post_type("professor", array(
         "show_in_rest" => true,
-        "supports" => array("title", "editor", "excerpt"),
+        "supports" => array("title", "editor", "excerpt", "thumbnail"),
         "rewrite" => array("slug" => "professors"),
         "has_archive" => true,
         "public" => true,
