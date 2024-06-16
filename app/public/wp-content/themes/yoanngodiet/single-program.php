@@ -21,7 +21,10 @@ while (have_posts()) {
         <div class="generic-content">
             <?php
             $today = date("Ymd");
-            $homepageEvents = new WP_Query(array(
+            $current_program_id = get_the_ID();
+
+            the_content();
+            $relatedEvents = new WP_Query(array(
                 "posts_per_page" => -1,
                 "post_type" => "event",
                 "orderby" => "meta_value_num",
@@ -34,40 +37,57 @@ while (have_posts()) {
                         "value" => $today,
                         "type" => "numeric"
                     )
+                ),
+                'meta_query' => array(
+                    'relation' => 'AND',
+                    array(
+                        "key" => "event_date",
+                        "compare" => ">=",
+                        "value" => $today,
+                        "type" => "numeric"
+                    ),
+                    array(
+                        'key' => 'related_programs',
+                        'compare' => 'LIKE',
+                        'value' => '"' . $current_program_id . '"'
+                    )
                 )
             ));
-
-            while ($homepageEvents->have_posts()) {
-                $homepageEvents->the_post(); ?>
-                <div class="event-summary">
-                    <a class="event-summary__date t-center" href="#">
-                        <span class="event-summary__month"><?php
-                                                            $eventDate = new DateTime(get_field("event_date"));
-                                                            echo $eventDate->format("M");
-                                                            ?></span>
-                        <span class="event-summary__day"><?php
-                                                            echo $eventDate->format("d");
-                                                            ?></span>
-                    </a>
-                    <div class="event-summary__content">
-                        <h5 class="event-summary__title headline headline--tiny">
-                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                        </h5>
-                        <p>
-                            <?php if (has_excerpt()) {
-                                echo get_the_excerpt();
-                            } else {
-                                echo wp_trim_words(get_the_content(), "18");
-                            } ?>
-                            <a href="<?php the_permalink(); ?>" class="nu gray">Read more</a>
-                        </p>
+            if ($relatedEvents->have_posts()) {
+                echo '<hr class="section-break">';
+                echo '<h2 class="headline headline--medium">Upcoming ' . get_the_title() . ' events</h2>';
+                while ($relatedEvents->have_posts()) {
+                    $relatedEvents->the_post(); ?>
+                    <div class="event-summary">
+                        <a class="event-summary__date t-center" href="#">
+                            <span class="event-summary__month"><?php
+                                                                $eventDate = new DateTime(get_field("event_date"));
+                                                                echo $eventDate->format("M");
+                                                                ?></span>
+                            <span class="event-summary__day"><?php
+                                                                echo $eventDate->format("d");
+                                                                ?></span>
+                        </a>
+                        <div class="event-summary__content">
+                            <h5 class="event-summary__title headline headline--tiny">
+                                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                            </h5>
+                            <p>
+                                <?php if (has_excerpt()) {
+                                    echo get_the_excerpt();
+                                } else {
+                                    echo wp_trim_words(get_the_content(), "18");
+                                } ?>
+                                <a href="<?php the_permalink(); ?>" class="nu gray">Read more</a>
+                            </p>
+                        </div>
                     </div>
-                </div>
             <?php }
+            }
             wp_reset_postdata();
             ?>
-
         </div>
+
     </div>
 <?php
 }
