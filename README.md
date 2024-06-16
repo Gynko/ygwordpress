@@ -28,6 +28,8 @@
     - [3.5.16. Manipulating default url based queries](#3516-manipulating-default-url-based-queries)
     - [3.5.17. Pasts events - custom query pagination](#3517-pasts-events---custom-query-pagination)
     - [3.5.18. The program posts types - relationships between content posts](#3518-the-program-posts-types---relationships-between-content-posts)
+    - [3.5.19. Create new post type: professors](#3519-create-new-post-type-professors)
+    - [3.5.20. Adding picture of the professor](#3520-adding-picture-of-the-professor)
 
 # 1. Purpose
 
@@ -866,6 +868,7 @@ get_footer();
 
 1. Update the mu-plugins
 2. Settings / permalinks / save changes
+3. We created a new Relationship with ACF, if post type is equal to event
 
 ```php
 <?php function university_post_types()
@@ -909,5 +912,43 @@ get_footer();
     ));
 }
 add_action("init", "university_post_types");
+```
 
+### 3.5.19. Create new post type: professors
+
+1. Go to mu_plugin
+
+```php
+register_post_type("professor", array(
+    "show_in_rest" => true,
+    "supports" => array("title", "editor", "excerpt"),
+    "public" => true,
+    "show_in_rest" => true,
+    "menu_icon" => "dashicons-welcome-learn-more",
+    "labels" => array(
+        "name" => "Professors",
+        "add_new_item" => "Add new Professor",
+        "add_new" => "Add new Professor",
+        "edit_item" => "Edit Professor",
+        "all_items" => "All Professors",
+        "singular_name" => "Professor",
+    )
+));
+```
+
+2. Create some entries, update permalinks
+3. single-professor.php
+4. Create a relationship with programs, adding it in the rules of the Post_Type
+5. Create our custom query - note the importance of wp_reset_postdata();
+
+### 3.5.20. Adding picture of the professor
+
+1. Not adding an image block. We added before featured image / post thumbnails. Not there by default
+2. In functions .php:
+```php
+function university_features()
+{
+    add_theme_support("title-tag");
+    add_theme_support("post-thumbnails");
+}
 ```

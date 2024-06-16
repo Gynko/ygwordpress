@@ -1,7 +1,8 @@
 <?php
 get_header();
 while (have_posts()) {
-    the_post(); ?>
+    the_post();
+    $program_title = get_the_title(); ?>
     <div class="page-banner">
         <div class="page-banner__bg-image" style="background-image: url(<?php echo get_theme_file_uri("/images/ocean.jpg"); ?>"></div>
         <div class="page-banner__content container container--narrow">
@@ -24,20 +25,40 @@ while (have_posts()) {
             $current_program_id = get_the_ID();
 
             the_content();
+            // Query for related professors
+            $relatedProfessors = new WP_Query(array(
+                "posts_per_page" => -1,
+                "post_type" => "professor",
+                "orderby" => "title",
+                "order" => "ASC",
+                'meta_query' => array(
+                    array(
+                        'key' => 'related_programs',
+                        'compare' => 'LIKE',
+                        'value' => '"' . $current_program_id . '"'
+                    )
+                )
+            ));
+
+            if ($relatedProfessors->have_posts()) {
+                echo '<hr class="section-break">';
+                echo '<h2 class="headline headline--medium">Professors in ' . $program_title . '</h2>';
+                while ($relatedProfessors->have_posts()) {
+                    $relatedProfessors->the_post(); ?>
+                    <div class="professor-summary">
+                        <h5 class="professor-summary__title headline headline--tiny">
+                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                        </h5>
+                    </div>
+                <?php }
+            }
+            // Query for related events
             $relatedEvents = new WP_Query(array(
                 "posts_per_page" => -1,
                 "post_type" => "event",
                 "orderby" => "meta_value_num",
                 "meta_key" => "event_date",
                 "order" => "ASC",
-                "meta_query" => array(
-                    array(
-                        "key" => "event_date",
-                        "compare" => ">=",
-                        "value" => $today,
-                        "type" => "numeric"
-                    )
-                ),
                 'meta_query' => array(
                     'relation' => 'AND',
                     array(
@@ -53,6 +74,9 @@ while (have_posts()) {
                     )
                 )
             ));
+
+            wp_reset_postdata();
+
             if ($relatedEvents->have_posts()) {
                 echo '<hr class="section-break">';
                 echo '<h2 class="headline headline--medium">Upcoming ' . get_the_title() . ' events</h2>';
@@ -84,11 +108,13 @@ while (have_posts()) {
                     </div>
             <?php }
             }
-            wp_reset_postdata();
+
+
+
             ?>
         </div>
-
     </div>
 <?php
 }
 get_footer();
+?>
