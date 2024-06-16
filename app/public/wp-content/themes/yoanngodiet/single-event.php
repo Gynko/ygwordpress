@@ -20,8 +20,23 @@ while (have_posts()) {
 
         <div class="generic-content">
             <?php the_content() ?>
+            <?php
+            // Retrieve related programs
+            $related_programs = get_field('related_programs');
+
+            if ($related_programs) {
+                echo '<hr class="section-break">';
+                echo '<h2 class="headline headline--medium">Related Programs</h2>';
+                echo '<ul class="link-list min-list">';
+                foreach ($related_programs as $program) {
+                    echo '<li><a href="' . get_permalink($program->ID) . '">' . get_the_title($program->ID) . '</a></li>';
+                }
+                echo '</ul>';
+            }
+            ?>
         </div>
     </div>
+
 <?php
 }
 get_footer();

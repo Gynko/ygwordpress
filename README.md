@@ -29,10 +29,10 @@
     - [3.5.17. Pasts events - custom query pagination](#3517-pasts-events---custom-query-pagination)
     - [3.5.18. The program posts types - relationships between content posts](#3518-the-program-posts-types---relationships-between-content-posts)
 
-
 # 1. Purpose
 
 This is my personal website.
+
 I made it to learn myself Wordpress, and at the same time to a cool company in Tønsberg.
 
 # 2. Installation
