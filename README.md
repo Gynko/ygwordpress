@@ -33,6 +33,7 @@
     - [3.5.21. Cropping](#3521-cropping)
     - [3.5.22. Page banner dynamic bg image -  and reusable code](#3522-page-banner-dynamic-bg-image----and-reusable-code)
     - [3.5.23. Get template part](#3523-get-template-part)
+    - [3.5.24. Create a function vs get\_template\_part?](#3524-create-a-function-vs-get_template_part)
 
 # 1. Purpose
 
@@ -1003,3 +1004,52 @@ function university_features()
 ```
 
 ### 3.5.23. Get template part
+
+we create a new folder - template-parts, and a event.php with the code that repeats
+```php
+<div class="event-summary">
+    <a class="event-summary__date t-center" href="#">
+        <span class="event-summary__month"><?php
+                                            $eventDate = new DateTime(get_field("event_date"));
+                                            echo $eventDate->format("M");
+                                            ?></span>
+        <span class="event-summary__day"><?php
+                                            echo $eventDate->format("d");
+                                            ?></span>
+    </a>
+    <div class="event-summary__content">
+        <h5 class="event-summary__title headline headline--tiny">
+            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+        </h5>
+        <p>
+            <?php if (has_excerpt()) {
+                echo get_the_excerpt();
+            } else {
+                echo wp_trim_words(get_the_content(), "18");
+            } ?>
+            <a href="<?php the_permalink(); ?>" class="nu gray">Read more</a>
+        </p>
+    </div>
+</div>
+```
+
+and then
+
+```php
+while ($homepageEvents->have_posts()) {
+    $homepageEvents->the_post();
+    get_template_part("template-parts/event");
+}
+wp_reset_postdata();
+?>
+```
+
+Specialty name = second argument which allows dynamicity.
+```php
+get_template_part("template-parts/content", get_post_type());
+```
+So now in our folder template-parts, we name our file content-event and content-professors, with different content.
+
+### 3.5.24. Create a function vs get_template_part?
+
+If i want the duplicate code to be dynamic - we create a function. If duplicate code is static, we just get_template.
