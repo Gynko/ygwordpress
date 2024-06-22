@@ -60,8 +60,8 @@ class Search {
         }
     }
 
-    getResults(){
-        fetch("http://yoanngodiet.local/wp-json/wp/v2/posts?search=" + this.searchField.value)
+    getResults() {
+        fetch(universityData.root_url + "/wp-json/wp/v2/posts?search=" + this.searchField.value)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok ' + response.statusText);
@@ -70,18 +70,23 @@ class Search {
             })
             .then(posts => {
                 if (posts.length > 0) {
-                    this.resultsDiv.innerHTML = `
-                    <h1>${posts[0].title.rendered}</h1>
-                    <p>${posts[0].content.rendered}</p>
-                    `
+                    this.resultsDiv.innerHTML = posts.map(post => `
+                        <div class="post" style="background-color:pink">
+                            <h1>${post.title.rendered}</h1>
+                            <p>${post.content.rendered}</p>
+                            <a href="${post.link}">${post.title.rendered}</a>
+                        </div>
+                    `).join('');
+                    this.isSpinnerVisible = false;
                 } else {
-                    alert('No posts found.');
+                    this.resultsDiv.innerHTML = "no matches found."
                 }
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
             });
     }
+    
     
 }
 
