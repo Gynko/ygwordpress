@@ -30,6 +30,9 @@
     - [3.5.18. The program posts types - relationships between content posts](#3518-the-program-posts-types---relationships-between-content-posts)
     - [3.5.19. Create new post type: professors](#3519-create-new-post-type-professors)
     - [3.5.20. Adding picture of the professor](#3520-adding-picture-of-the-professor)
+    - [3.5.21. Cropping](#3521-cropping)
+    - [3.5.22. Page banner dynamic bg image -  and reusable code](#3522-page-banner-dynamic-bg-image----and-reusable-code)
+    - [3.5.23. Get template part](#3523-get-template-part)
 
 # 1. Purpose
 
@@ -971,4 +974,32 @@ function university_features()
     add_image_size("professorPortrait", 480, 650, true);
 }
 ```
-6. Not retroactive - a plugin can do this: regenerate thumbnails
+6. Not retroactive - a plugin can do this: "Regenerate thumbnails" and activate
+7. Tools > Regenerate thumbnails
+
+### 3.5.21. Cropping 
+
+By default, wordpress cuts from the middle, but we can have more control with plugin called
+
+### 3.5.22. Page banner dynamic bg image -  and reusable code
+
+We cannot use the featured image. Would not work for the professor type because we can only have one featured image.
+
+We need a custom field that allow this, with ACF.
+
+Then a new image size.
+
+```php
+function university_features()
+{
+    add_theme_support("title-tag");
+    add_theme_support("post-thumbnails");
+    add_image_size("professorLandscape", 400, 260, true);
+    add_image_size("professorPortrait", 480, 650, true);
+    add_image_size("pageBanner", 1500, 350, true);
+}
+
+<?php the_post_thumbnail("professorPortrait") ?>
+```
+
+### 3.5.23. Get template part
