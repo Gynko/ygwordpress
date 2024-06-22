@@ -7,7 +7,6 @@
         "rewrite" => array("slug" => "events"),
         "has_archive" => true,
         "public" => true,
-        "show_in_rest" => true,
         "menu_icon" => "dashicons-calendar-alt",
         "labels" => array(
             "name" => "Events",
@@ -26,7 +25,6 @@
         "rewrite" => array("slug" => "programs"),
         "has_archive" => true,
         "public" => true,
-        "show_in_rest" => true,
         "menu_icon" => "dashicons-awards",
         "labels" => array(
             "name" => "Programs",
@@ -45,7 +43,6 @@
         "rewrite" => array("slug" => "professors"),
         "has_archive" => true,
         "public" => true,
-        "show_in_rest" => true,
         "menu_icon" => "dashicons-welcome-learn-more",
         "labels" => array(
             "name" => "Professors",
@@ -54,6 +51,23 @@
             "edit_item" => "Edit Professor",
             "all_items" => "All Professors",
             "singular_name" => "Professor",
+        )
+    ));
+
+    register_post_type("campus", array(
+        "show_in_rest" => true,
+        "supports" => array("title", "editor", "excerpt"),
+        "rewrite" => array("slug" => "campuses"),
+        "has_archive" => true,
+        "public" => true,
+        "menu_icon" => "dashicons-location-alt",
+        "labels" => array(
+            "name" => "Campuses",
+            "add_new_item" => "Add new Campus",
+            "add_new" => "Add new Campus",
+            "edit_item" => "Edit Campus",
+            "all_items" => "All Campuses",
+            "singular_name" => "Campus",
         )
     ));
 }
