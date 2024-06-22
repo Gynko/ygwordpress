@@ -81,9 +81,6 @@ while (have_posts()) {
                     get_template_part("template-parts/content", get_post_type());
                 }
             }
-
-
-
             ?>
         </div>
     </div>
