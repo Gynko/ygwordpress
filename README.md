@@ -44,7 +44,9 @@
     - [3.5.32. The raw data](#3532-the-raw-data)
     - [3.5.33. Using the new endpoint from the frontend](#3533-using-the-new-endpoint-from-the-frontend)
     - [3.5.34. A search that includes relationships](#3534-a-search-that-includes-relationships)
-    - [3.5.35. User roles and permissions](#3535-user-roles-and-permissions)
+    - [3.5.35. User roles and permissions: wordpress default](#3535-user-roles-and-permissions-wordpress-default)
+    - [3.5.36. Custom role](#3536-custom-role)
+    - [3.5.37. Open registration](#3537-open-registration)
 
 # 1. Purpose
 
@@ -1909,5 +1911,38 @@ function remove_duplicate_professors($professors)
 
 ```
 
-### 3.5.35. User roles and permissions
+### 3.5.35. User roles and permissions: wordpress default
 
+Larger websites require a team effort
+
+Too much content for one person to manage
+
+New user > bla bla > Role
+
+- Subscriber: cannot do anything
+- Contributor: can create a rough draft, but cannot publish it
+- Author: create and publish content. Can only make changes to a post they have created.
+- Editor: author + can also edit other peoples content.
+- Administrator: full access
+
+### 3.5.36. Custom role
+
+By default, an author would be able to create posts on all events, but if we want to limit to certain posts, we need to create a custom role.
+
+Plugin - Members
+
+Go to mu-plugins
+
+```php
+    register_post_type("event", array(
+        "capability_type" => "event",
+        "map_meta_cap" => true,
+```
+
+Gotcha = if you create new role, you need to add it to admin role!
+
+### 3.5.37. Open registration
+
+So that anyone can come and signup to get an account, to be subscriber.
+
+We will learn about permissions, security and CRUD user specific content.
