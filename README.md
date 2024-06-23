@@ -43,6 +43,8 @@
     - [3.5.31. Create a custom endpoint for search](#3531-create-a-custom-endpoint-for-search)
     - [3.5.32. The raw data](#3532-the-raw-data)
     - [3.5.33. Using the new endpoint from the frontend](#3533-using-the-new-endpoint-from-the-frontend)
+    - [3.5.34. A search that includes relationships](#3534-a-search-that-includes-relationships)
+    - [3.5.35. User roles and permissions](#3535-user-roles-and-permissions)
 
 # 1. Purpose
 
@@ -1661,3 +1663,251 @@ function universitySearchResults($data)
 }
 
 ```
+
+### 3.5.34. A search that includes relationships
+
+If we are searching for biology, we would love the search results to show the professors of biology, and the events related to biology.
+
+```php
+<?php
+
+add_action('rest_api_init', 'universityRegisterSearch');
+
+function universityRegisterSearch()
+{
+    register_rest_route('university/v1', 'search', array(
+        'methods' => WP_REST_SERVER::READABLE,
+        'callback' => 'universitySearchResults'
+    ));
+}
+
+function universitySearchResults($data)
+{
+    $mainQuery = new WP_Query(array(
+        'post_type' => array('post', 'page', 'professor', 'program', 'campus', 'event'),
+        's' => sanitize_text_field($data['term'])
+    ));
+
+    $results = array(
+        'generalInfo' => array(),
+        'professors' => array(),
+        'programs' => array(),
+        'events' => array(),
+        'campuses' => array()
+    );
+
+    while ($mainQuery->have_posts()) {
+        $mainQuery->the_post();
+
+        if (get_post_type() == 'post' or get_post_type() == 'page') {
+            array_push($results['generalInfo'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink(),
+                'postType' => get_post_type(),
+                'authorName' => get_the_author()
+            ));
+        }
+
+        if (get_post_type() == 'professor') {
+            array_push($results['professors'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink(),
+                'image' => get_the_post_thumbnail_url(0, 'professorLandscape')
+            ));
+        }
+
+        if (get_post_type() == 'program') {
+            array_push($results['programs'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink()
+            ));
+        }
+
+        if (get_post_type() == 'campus') {
+            array_push($results['campuses'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink()
+            ));
+        }
+
+        if (get_post_type() == 'event') {
+            $eventDate = new DateTime(get_field('event_date'));
+            $description = null;
+            if (has_excerpt()) {
+                $description = get_the_excerpt();
+            } else {
+                $description = wp_trim_words(get_the_content(), 18);
+            }
+
+            array_push($results['events'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink(),
+                'month' => $eventDate->format('M'),
+                'day' => $eventDate->format('d'),
+                'description' => $description
+            ));
+        }
+    }
+
+    $programRelationshipQuery = new WP_Query(array(
+        "post_type" => "professor",
+        "meta_query" => array(
+            array(
+                "key" => "related_programs",
+                "compare" => "LIKE",
+                "value" => '"60"'
+            )
+        )
+    ));
+
+    while ($programRelationshipQuery->have_posts()) {
+        $programRelationshipQuery->the_post();
+
+        if (get_post_type() == 'professor') {
+            array_push($results['professors'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink(),
+                'image' => get_the_post_thumbnail_url(0, 'professorLandscape')
+            ));
+        }
+    }
+
+    return $results;
+}
+
+```
+
+But: first we have hard-coded the code of the professor.
+
+But also, the search is currently cumulative: we are searching for the keywords inside the professor post types too so we could end up with duplicated, one for the keyword search and the relationship search.
+
+```php
+<?php
+
+add_action('rest_api_init', 'universityRegisterSearch');
+
+function universityRegisterSearch()
+{
+    register_rest_route('university/v1', 'search', array(
+        'methods' => WP_REST_SERVER::READABLE,
+        'callback' => 'universitySearchResults'
+    ));
+}
+
+function universitySearchResults($data)
+{
+    $mainQuery = new WP_Query(array(
+        'post_type' => array('post', 'page', 'professor', 'program', 'campus', 'event'),
+        's' => sanitize_text_field($data['term'])
+    ));
+
+    $results = array(
+        'generalInfo' => array(),
+        'professors' => array(),
+        'programs' => array(),
+        'events' => array(),
+        'campuses' => array()
+    );
+
+    while ($mainQuery->have_posts()) {
+        $mainQuery->the_post();
+
+        if (get_post_type() == 'post' or get_post_type() == 'page') {
+            array_push($results['generalInfo'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink(),
+                'postType' => get_post_type(),
+                'authorName' => get_the_author()
+            ));
+        }
+
+        if (get_post_type() == 'professor') {
+            array_push($results['professors'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink(),
+                'image' => get_the_post_thumbnail_url(0, 'professorLandscape')
+            ));
+        }
+
+        if (get_post_type() == 'program') {
+            array_push($results['programs'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink()
+            ));
+        }
+
+        if (get_post_type() == 'campus') {
+            array_push($results['campuses'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink()
+            ));
+        }
+
+        if (get_post_type() == 'event') {
+            $eventDate = new DateTime(get_field('event_date'));
+            $description = null;
+            if (has_excerpt()) {
+                $description = get_the_excerpt();
+            } else {
+                $description = wp_trim_words(get_the_content(), 18);
+            }
+
+            array_push($results['events'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink(),
+                'month' => $eventDate->format('M'),
+                'day' => $eventDate->format('d'),
+                'description' => $description
+            ));
+        }
+    }
+
+    $programRelationshipQuery = new WP_Query(array(
+        "post_type" => "professor",
+        "meta_query" => array(
+            array(
+                "key" => "related_programs",
+                "compare" => "LIKE",
+                "value" => '"60"'
+            )
+        )
+    ));
+
+    while ($programRelationshipQuery->have_posts()) {
+        $programRelationshipQuery->the_post();
+
+        if (get_post_type() == 'professor') {
+            array_push($results['professors'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink(),
+                'image' => get_the_post_thumbnail_url(0, 'professorLandscape')
+            ));
+        }
+    }
+
+    $results["professors"] = remove_duplicate_professors($results["professors"]);
+
+    return $results;
+}
+
+
+function remove_duplicate_professors($professors)
+{
+    $unique_professors = array();
+    $seen = array();
+
+    foreach ($professors as $professor) {
+        $key = $professor['title'] . '|' . $professor['permalink'];
+        if (!in_array($key, $seen)) {
+            $seen[] = $key;
+            $unique_professors[] = $professor;
+        }
+    }
+
+    return $unique_professors;
+}
+
+```
+
+### 3.5.35. User roles and permissions
+
