@@ -38,6 +38,10 @@
     - [3.5.26. Campuses](#3526-campuses)
     - [3.5.27. Live search](#3527-live-search)
     - [3.5.28. Load WP content with JS](#3528-load-wp-content-with-js)
+    - [3.5.29. Searching through posts, events, anything](#3529-searching-through-posts-events-anything)
+    - [3.5.30. Search - Add Custom fields to data](#3530-search---add-custom-fields-to-data)
+    - [3.5.31. Create a custom endpoint for search](#3531-create-a-custom-endpoint-for-search)
+    - [3.5.32. The raw data](#3532-the-raw-data)
 
 # 1. Purpose
 
@@ -1227,4 +1231,178 @@ function yoanngodiet_files()
     ));
 }
 add_action("wp_enqueue_scripts", "yoanngodiet_files");
+```
+
+### 3.5.29. Searching through posts, events, anything
+
+```js
+    async getResults() {
+        const postTypes = ["posts", "pages"];
+        const searchQuery = this.searchField.value;
+        const results = [];
+      
+        for (const type of postTypes) {
+          try {
+            const response = await fetch(
+              `${universityData.root_url}/wp-json/wp/v2/${type}?search=${searchQuery}`
+            );
+            if (!response.ok) {
+              throw new Error("Network response was not ok " + response.statusText);
+            }
+            const posts = await response.json();
+            results.push({ type, posts });
+          } catch (error) {
+            console.error("There has been a problem with your fetch operation:", error);
+          }
+        }
+      
+        if (results.length > 0) {
+          this.resultsDiv.innerHTML = results
+            .map(
+              (result) => `
+                <h1 style="background-color:yellow">${result.type.charAt(0).toUpperCase() + result.type.slice(1)}</h1>
+                ${result.posts
+                  .map(
+                    (post) => `
+                      <div class="post" style="background-color:pink">
+                        <h2>${post.title.rendered}</h2>
+                        <p>${post.content.rendered}</p>
+                        <a href="${post.link}">${post.title.rendered}</a>
+                      </div>
+                    `
+                  )
+                  .join('')}
+              `
+            )
+            .join('');
+        } else {
+          this.resultsDiv.innerHTML = "no matches found.";
+        }
+      
+        this.isSpinnerVisible = false;
+      }
+```
+
+### 3.5.30. Search - Add Custom fields to data 
+
+By default, when we visit the page /post, we get the 10 first posts. But what if it is not what we want and would like to have an additional custom field?
+
+```php
+function university_custom_rest()
+{
+    register_rest_field("post", "authorName", array(
+        "get_callback" => function () {
+            return get_the_author();
+        },
+    ));
+};
+add_action("rest_api_init", "university_custom_rest");
+```
+
+### 3.5.31. Create a custom endpoint for search
+
+Why?
+
+There are all kinds of builtin urls that will let you fetch about just any data you may be looking for.
+
+```php
+"show_in_rest" => true,
+```
+
+So for example in our search, we would like to have an endpoint that can show posts, events, professors in one strike.
+
+Benefit:
+
+1. We can have custom search logic
+2. Respond with less JSON data (loads faster)
+3. Send only 1 http request instead of 6
+
+Process:
+
+1. Create a helpers function folder
+2. Require it in functions.php: require get_theme_file_path("/helpers/search-route.php");
+
+register_rest_route: 
+
+First argument is the namespace. If we look at the API url for a given posttype, the namespace of the url is wp, which indicates that it is part of the default part of the core of wordpress - which we dont want to use
+
+```bash
+http://yoanngodiet.local/wp-json/wp/v2/professor
+```
+
+```php
+<?php
+function universityRegisterSearch()
+{
+    register_rest_route("university/v1", "search", array(
+        "methods" => WP_REST_Server::READABLE,
+        "callback" => "universitySearchResults"
+    ));
+}
+add_action("rest_api_init", "universityRegisterSearch");
+
+function universitySearchResults()
+{
+    return "congratulations";
+};
+
+```
+
+### 3.5.32. The raw data
+
+```php
+<?php
+
+function universityRegisterSearch()
+{
+    register_rest_route("university/v1", "search", array(
+        "methods" => WP_REST_Server::READABLE,
+        "callback" => "universitySearchResults"
+    ));
+}
+add_action("rest_api_init", "universityRegisterSearch");
+
+function universitySearchResults($data)
+{
+    $mainQuery = new WP_Query(array(
+        "post_type" => array("post", "page", "professor", "program", "event"),
+        "s" => sanitize_text_field($data["term"])
+    ));
+
+    $results = array(
+        "generalInfo" => array(),
+        "professors" => array(),
+        "programs" => array(),
+        "events" => array()
+    );
+
+    while ($mainQuery->have_posts()) {
+        $mainQuery->the_post();
+        if (get_post_type() == "post" or get_post_type() == "page") {
+            array_push($results["generalInfo"], array(
+                "title" => get_the_title(),
+                "permalink" => get_the_permalink()
+            ));
+        }
+        if (get_post_type() == "professor") {
+            array_push($results["professors"], array(
+                "title" => get_the_title(),
+                "permalink" => get_the_permalink()
+            ));
+        }
+        if (get_post_type() == "program") {
+            array_push($results["programs"], array(
+                "title" => get_the_title(),
+                "permalink" => get_the_permalink()
+            ));
+        }
+        if (get_post_type() == "event") {
+            array_push($results["events"], array(
+                "title" => get_the_title(),
+                "permalink" => get_the_permalink()
+            ));
+        }
+    }
+    return $results;
+};
 ```

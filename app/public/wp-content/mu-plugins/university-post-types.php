@@ -1,4 +1,6 @@
-<?php function university_post_types()
+<?php
+
+function university_post_types()
 {
     // Event post types
     register_post_type("event", array(
