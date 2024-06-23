@@ -1946,3 +1946,86 @@ Gotcha = if you create new role, you need to add it to admin role!
 So that anyone can come and signup to get an account, to be subscriber.
 
 We will learn about permissions, security and CRUD user specific content.
+
+```php
+ <a href="<?php echo esc_url(site_url("/wp-signup.php")); ?>" class="btn btn--small btn--dark-orange float-left">Sign Up</a>
+```
+
+We log the person. They dont need to still see the login and register button.
+Lets deal with header, login, register, logout.
+
+```php
+<!DOCTYPE html>
+<html <?php language_attributes() ?>>
+
+<head>
+    <meta charset="<?php bloginfo("charset"); ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php wp_head(); ?>
+</head>
+
+<body <?php body_class() ?>>
+    <header class="site-header">
+        <div class="container">
+            <h1 class="school-logo-text float-left">
+                <a href="<?php echo site_url() ?>"><strong>Yoann</strong> Godiet</a>
+            </h1>
+            <span class="js-search-trigger site-header__search-trigger"><i class="fa fa-search" aria-hidden="true"></i></span>
+            <i class="site-header__menu-trigger fa fa-bars" aria-hidden="true"></i>
+            <div class="site-header__menu group">
+                <nav class="main-navigation">
+                    <ul>
+                        <li <?php if (is_page("about-me") or wp_get_post_parent_id(0) == 12) echo 'class="current-menu-item"' ?>><a href="<?php echo site_url("/about-me") ?>">About me</a></li>
+                        <li><a href="#">CV</a></li>
+                        <li <?php if (get_post_type() == "program") echo 'class="current-menu-item"' ?>><a href="<?php echo get_post_type_archive_link("program") ?>">Programs</a></li>
+                        <li <?php if (get_post_type() == "event" or is_page("past-events")) echo 'class="current-menu-item"' ?>><a href="<?php echo get_post_type_archive_link("event") ?>">Events</a></li>
+                        <li <?php if (get_post_type() == "post") echo 'class="current-menu-item"' ?>><a href="<?php echo site_url("/blog") ?>">Blog</a></li>
+                    </ul>
+                </nav>
+                <div class="site-header__util">
+                    <?php
+                    if (is_user_logged_in()) {
+                    ?>
+                        <a href="<?php echo wp_logout_url(); ?>" class="btn btn--small btn--dark-orange float-left btn--with-photo">
+                            <span class="site-header__avatar"><?php echo get_avatar(get_current_user_id(), 60); ?></span>
+                            <span class="btn__text">Log out</span>
+                        </a>
+                    <?php
+                    } else { ?>
+                        <a href="#" class="btn btn--small btn--orange float-left push-right">Login</a>
+                        <a href="<?php echo esc_url(site_url("/wp-signup.php")); ?>" class="btn btn--small btn--dark-orange float-left">Sign Up</a>
+                    <?php }
+                    ?>
+
+                    <span class="search-trigger js-search-trigger"><i class="fa fa-search" aria-hidden="true"></i></span>
+                </div>
+            </div>
+        </div>
+    </header>
+```
+
+To redirect user after login (they go to dashboard by default).
+Also, hide the admin bar
+
+```php
+
+function noSubsAdminBar()
+{
+    $ourCurrentUser = wp_get_current_user();
+    if (count($ourCurrentUser->roles) == 1 and $ourCurrentUser->roles[0] == "subscriber") {
+        show_admin_bar(false);
+    }
+}
+add_action("wp_loaded", "noSubsAdminBar");
+
+function redirectSubsToFrontend()
+{
+    $ourCurrentUser = wp_get_current_user();
+    if (count($ourCurrentUser->roles) == 1 and $ourCurrentUser->roles[0] == "subscriber") {
+        wp_redirect(site_url("/"));
+        exit;
+    }
+}
+add_action("admin_init", "redirectSubsToFrontend");
+
+```
