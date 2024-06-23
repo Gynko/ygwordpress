@@ -47,6 +47,8 @@
     - [3.5.35. User roles and permissions: wordpress default](#3535-user-roles-and-permissions-wordpress-default)
     - [3.5.36. Custom role](#3536-custom-role)
     - [3.5.37. Open registration](#3537-open-registration)
+    - [3.5.38. The login](#3538-the-login)
+    - [3.5.39. User generated content](#3539-user-generated-content)
 
 # 1. Purpose
 
@@ -1992,8 +1994,8 @@ Lets deal with header, login, register, logout.
                         </a>
                     <?php
                     } else { ?>
-                        <a href="#" class="btn btn--small btn--orange float-left push-right">Login</a>
-                        <a href="<?php echo esc_url(site_url("/wp-signup.php")); ?>" class="btn btn--small btn--dark-orange float-left">Sign Up</a>
+                        <a href="<?php wp_login_url() ?>" class="btn btn--small btn--orange float-left push-right">Login</a>
+                        <a href="<?php wp_registration_url() ?>" class="btn btn--small btn--dark-orange float-left">Sign Up</a>
                     <?php }
                     ?>
 
@@ -2027,5 +2029,36 @@ function redirectSubsToFrontend()
     }
 }
 add_action("admin_init", "redirectSubsToFrontend");
-
 ```
+
+### 3.5.38. The login
+
+in functions.php, to change the logo's pointing to the site adress, and the styling of the page. You need to overwrite the default wordpress styling.
+
+```php
+function ourHeaderUrl()
+{
+    return esc_url(site_url("/"));
+}
+add_filter("login_headerurl", "ourHeaderUrl");
+
+function ourLoginCSS()
+{
+    wp_enqueue_style("google_fonts", "//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i");
+    wp_enqueue_style("font_awesome", "//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+    wp_enqueue_style("main_styles", get_theme_file_uri("/build/style-index.css"));
+    wp_enqueue_style("extra_styles", get_theme_file_uri("/build/index.css"));
+}
+add_action("login_enqueue_scripts", "ourloginCSS");
+```
+
+To change the "powered by wordpress":
+```php
+add_filter("login_headertitle", "ourLoginTitle");
+function ourLoginTitle()
+{
+    return get_bloginfo("name");
+}
+```
+
+### 3.5.39. User generated content
