@@ -2562,3 +2562,37 @@ return $data;
 ```
 
 ### 3.5.43. Per user post limit
+
+We limit with functions.php.
+
+Additionnaly there is a problem is that if we want to delete out note after we reached the limit, it will not work. This is because under the hood, when you move a post into the trash, wordpress has to edit its post status and set it to "trash".. and the function wp_insert_post_data counts as an edit.
+
+```php
+add_filter("wp_insert_post_data", "makeNotePrivate", 10, 2);
+function makeNotePrivate($data, $postarr){
+if($data["post_type"] == "note"){
+    if(count_user_posts(get_current_user_id(), 'note') > 4 AND !$postarr['ID']) {
+        die("You have reached your note limit.");
+      }
+
+    $data["post_content"] = sanitize_textarea_field($data["post_content"]);
+    $data["post_title"] = sanitize_text_field($data["post_title"]);
+
+}
+
+    if($data["post_type"] == "note" and $data["post_status"] != "trash"){
+        $data["post_status"] = "private";
+    }
+
+return $data;
+}
+```
+
+ABout the 10 and 2:
+
+$priority (int):
+
+The priority at which the function should be executed. Lower numbers correspond to earlier execution, and higher numbers correspond to later execution. The default value is 10. Here, it is set to 10, meaning it will run at the default priority.
+$accepted_args (int):
+
+The number of arguments the function accepts. In this case, it is set to 2 because the makeNotePrivate function accepts two arguments: $data and $postarr.
