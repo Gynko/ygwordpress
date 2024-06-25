@@ -49,7 +49,12 @@
     - [3.5.37. Open registration](#3537-open-registration)
     - [3.5.38. The login](#3538-the-login)
     - [3.5.39. User generated content](#3539-user-generated-content)
-    - [Permissions and security](#permissions-and-security)
+    - [3.5.40. Permissions](#3540-permissions)
+    - [3.5.41. Security: the notes and escape functions](#3541-security-the-notes-and-escape-functions)
+      - [3.5.41.1. Escape Attribute:](#35411-escape-attribute)
+      - [3.5.41.2. Escape textarea](#35412-escape-textarea)
+    - [3.5.42. Even more secure: html in the notes](#3542-even-more-secure-html-in-the-notes)
+    - [3.5.43. Per user post limit](#3543-per-user-post-limit)
 
 # 1. Purpose
 
@@ -2448,7 +2453,7 @@ class MyNotes {
 export default MyNotes;
 ```
 
-### Permissions and security
+### 3.5.40. Permissions
 
 We give our subscribers the possibility to add notes and preserve security and performance.
 
@@ -2504,3 +2509,56 @@ function makeNotePrivate($data){
 return $data;
 }
 ```
+
+Now the weird thing is that now posts have the word private in the title.
+
+```php
+<input readonly class="note-title-field" value="<?php echo str_replace("Private: ", "", esc_attr(get_the_title())); ?>">
+```
+
+We no longer need users to delete published notes and edit them - Because now that they are private they will never be considered being published.
+
+### 3.5.41. Security: the notes and escape functions
+
+People could write up a script tag and some code in the notes fields. But Wordpress is secure out of the box and prevents this. In Members/ general, we see an "unfiltered HTML" value, so only the admin can do this.. But what if Admin went rogue?
+
+So if we add the script tag as admin in our notes, it will show but not execute. That is because we escaped the content here:
+
+```php
+<textarea readonly class="note-body-field"><?php echo esc_attr(wp_strip_all_tags(get_the_content())); ?></textarea>
+```
+
+There are different escape functions for different scenarios.
+
+#### 3.5.41.1. Escape Attribute:
+
+```php
+<input readonly class="note-title-field" value="<?php echo str_replace("Private: ", "", esc_attr(get_the_title())); ?>">
+```
+
+#### 3.5.41.2. Escape textarea
+
+```php
+<textarea readonly class="note-body-field"><?php echo esc_textarea(wp_strip_all_tags(get_the_content())); ?></textarea>
+```
+
+### 3.5.42. Even more secure: html in the notes
+
+```php
+add_filter("wp_insert_post_data", "makeNotePrivate");
+function makeNotePrivate($data){
+if($data["post_type"] == "note"){
+    $data["post_content"] = sanitize_textarea_field($data["post_content"]);
+    $data["post_title"] = sanitize_text_field($data["post_title"]);
+
+}
+
+    if($data["post_type"] == "note" and $data["post_status"] != "trash"){
+        $data["post_status"] = "private";
+    }
+
+return $data;
+}
+```
+
+### 3.5.43. Per user post limit
