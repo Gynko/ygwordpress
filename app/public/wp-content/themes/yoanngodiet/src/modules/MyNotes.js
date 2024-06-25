@@ -1,19 +1,27 @@
+document.addEventListener("DOMContentLoaded", () => {
+  new MyNotes();
+});
+
 class MyNotes {
   constructor() {
     this.events();
   }
 
   events() {
-    document.getElementById("my-notes").addEventListener("click", (event) => {
-      if (event.target.closest(".delete-note")) this.deleteNote(event);
-      if (event.target.closest(".edit-note")) this.editNote.bind(this)(event);
-      if (event.target.closest(".update-note"))
-        this.updateNote.bind(this)(event);
-    });
+    const notesContainer = document.getElementById("my-notes");
+    if (notesContainer) {
+      notesContainer.addEventListener("click", (event) => {
+        if (event.target.closest(".delete-note")) this.deleteNote(event);
+        if (event.target.closest(".edit-note")) this.editNote.bind(this)(event);
+        if (event.target.closest(".update-note"))
+          this.updateNote.bind(this)(event);
+      });
+    }
 
-    document
-      .querySelector(".submit-note")
-      .addEventListener("click", this.createNote.bind(this));
+    const submitButton = document.querySelector(".submit-note");
+    if (submitButton) {
+      submitButton.addEventListener("click", this.createNote.bind(this));
+    }
   }
 
   async createNote(event) {

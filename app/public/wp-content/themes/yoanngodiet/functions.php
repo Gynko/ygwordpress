@@ -1,6 +1,7 @@
 <?php
 
 require get_theme_file_path("/helpers/search-route.php");
+require get_theme_file_path("/helpers/like-route.php");
 
 function university_custom_rest()
 {

@@ -2066,9 +2066,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/HeroSlider */ "./src/modules/HeroSlider.js");
 /* harmony import */ var _modules_Search__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/Search */ "./src/modules/Search.js");
 /* harmony import */ var _modules_MyNotes__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/MyNotes */ "./src/modules/MyNotes.js");
+/* harmony import */ var _modules_Like__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./modules/Like */ "./src/modules/Like.js");
 
 
 // Our modules / classes
+
 
 
 
@@ -2079,6 +2081,7 @@ const mobileMenu = new _modules_MobileMenu__WEBPACK_IMPORTED_MODULE_1__["default
 const heroSlider = new _modules_HeroSlider__WEBPACK_IMPORTED_MODULE_2__["default"]();
 const search = new _modules_Search__WEBPACK_IMPORTED_MODULE_3__["default"]();
 const myNotes = new _modules_MyNotes__WEBPACK_IMPORTED_MODULE_4__["default"]();
+const likes = new _modules_Like__WEBPACK_IMPORTED_MODULE_5__["default"]();
 
 /***/ }),
 
@@ -2124,6 +2127,84 @@ class HeroSlider {
 
 /***/ }),
 
+/***/ "./src/modules/Like.js":
+/*!*****************************!*\
+  !*** ./src/modules/Like.js ***!
+  \*****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+class Like {
+  constructor() {
+    this.events();
+  }
+  events() {
+    document.querySelectorAll(".like-box").forEach(likeBox => {
+      likeBox.addEventListener("click", this.ourClickDispatcher.bind(this));
+    });
+  }
+  ourClickDispatcher(event) {
+    const currentLikeBox = event.target.closest(".like-box");
+    if (currentLikeBox.getAttribute("data-exists") === "yes") {
+      this.deleteLike(currentLikeBox);
+    } else {
+      this.createLike(currentLikeBox);
+    }
+  }
+  async createLike(currentLikeBox) {
+    try {
+      const response = await fetch(`${universityData.root_url}/wp-json/university/v1/manageLike`, {
+        method: "POST",
+        headers: {
+          "X-WP-Nonce": universityData.nonce,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          professorId: currentLikeBox.dataset.professor
+        })
+      });
+      const data = await response.json();
+      currentLikeBox.setAttribute("data-exists", "yes");
+      let likeCount = parseInt(currentLikeBox.querySelector(".like-count").innerHTML, 10);
+      likeCount++;
+      currentLikeBox.querySelector(".like-count").innerHTML = likeCount;
+      currentLikeBox.setAttribute("data-like", data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async deleteLike(currentLikeBox) {
+    try {
+      const response = await fetch(`${universityData.root_url}/wp-json/university/v1/manageLike`, {
+        method: "DELETE",
+        headers: {
+          "X-WP-Nonce": universityData.nonce,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          like: currentLikeBox.getAttribute("data-like")
+        })
+      });
+      await response.json();
+      currentLikeBox.setAttribute("data-exists", "no");
+      let likeCount = parseInt(currentLikeBox.querySelector(".like-count").innerHTML, 10);
+      likeCount--;
+      currentLikeBox.querySelector(".like-count").innerHTML = likeCount;
+      currentLikeBox.setAttribute("data-like", "");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Like);
+
+/***/ }),
+
 /***/ "./src/modules/MobileMenu.js":
 /*!***********************************!*\
   !*** ./src/modules/MobileMenu.js ***!
@@ -2165,17 +2246,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+document.addEventListener("DOMContentLoaded", () => {
+  new MyNotes();
+});
 class MyNotes {
   constructor() {
     this.events();
   }
   events() {
-    document.getElementById("my-notes").addEventListener("click", event => {
-      if (event.target.closest(".delete-note")) this.deleteNote(event);
-      if (event.target.closest(".edit-note")) this.editNote.bind(this)(event);
-      if (event.target.closest(".update-note")) this.updateNote.bind(this)(event);
-    });
-    document.querySelector(".submit-note").addEventListener("click", this.createNote.bind(this));
+    const notesContainer = document.getElementById("my-notes");
+    if (notesContainer) {
+      notesContainer.addEventListener("click", event => {
+        if (event.target.closest(".delete-note")) this.deleteNote(event);
+        if (event.target.closest(".edit-note")) this.editNote.bind(this)(event);
+        if (event.target.closest(".update-note")) this.updateNote.bind(this)(event);
+      });
+    }
+    const submitButton = document.querySelector(".submit-note");
+    if (submitButton) {
+      submitButton.addEventListener("click", this.createNote.bind(this));
+    }
   }
   async createNote(event) {
     const newPost = {
