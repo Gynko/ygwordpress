@@ -55,7 +55,8 @@
       - [3.5.41.2. Escape textarea](#35412-escape-textarea)
     - [3.5.42. Even more secure: html in the notes](#3542-even-more-secure-html-in-the-notes)
     - [3.5.43. Per user post limit](#3543-per-user-post-limit)
-    - [Final code without jquery](#final-code-without-jquery)
+    - [3.5.44. Final code without jquery](#3544-final-code-without-jquery)
+    - [3.5.45. Let user like or heart a professor](#3545-let-user-like-or-heart-a-professor)
 
 # 1. Purpose
 
@@ -2621,7 +2622,7 @@ function university_custom_rest()
 add_action("rest_api_init", "university_custom_rest");
 ```
 
-### Final code without jquery
+### 3.5.44. Final code without jquery
 
 ```js
 class MyNotes {
@@ -2793,3 +2794,5 @@ class MyNotes {
 
 export default MyNotes;
 ```
+
+### 3.5.45. Let user like or heart a professor
