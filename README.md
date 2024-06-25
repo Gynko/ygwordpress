@@ -33,7 +33,7 @@
     - [3.5.21. Cropping](#3521-cropping)
     - [3.5.22. Page banner dynamic bg image - and reusable code](#3522-page-banner-dynamic-bg-image---and-reusable-code)
     - [3.5.23. Get template part](#3523-get-template-part)
-    - [3.5.24. Create a function vs get_template_part?](#3524-create-a-function-vs-get_template_part)
+    - [3.5.24. Create a function vs get\_template\_part?](#3524-create-a-function-vs-get_template_part)
     - [3.5.25. Getting ready for Javascript](#3525-getting-ready-for-javascript)
     - [3.5.26. Campuses](#3526-campuses)
     - [3.5.27. Live search](#3527-live-search)
@@ -2796,3 +2796,52 @@ export default MyNotes;
 ```
 
 ### 3.5.45. Let user like or heart a professor
+
+Here we create a custom post type called like. Each post will represent a one to one relationship between the id number of the current user and id number of the liked professor
+
+```php
+register_post_type("like", array(
+    "supports" => array("title"),
+    "public" => false,
+    "show_ui" => true,
+    "menu_icon" => "dashicons-heart",
+    "labels" => array(
+        "name" => "Likes",
+        "add_new_item" => "Add new Like",
+        "add_new" => "Add new Like",
+        "edit_item" => "Edit Like",
+        "all_items" => "All Likes",
+        "singular_name" => "Like",
+    )
+));
+```
+
+Then new field ACF
+
+We note that for dr strange, we have his id being 69 - we create a new like with professor id 69 for testing purposes.
+
+```bash
+http://yoanngodiet.local/wp-admin/post.php?post=69&action=edit
+```
+
+```php
+<?php
+  $likeCount = new WP_Query(array(
+    'post_type' => 'like',
+    'meta_query' => array(
+      array(
+        'key' => 'liked_professor_id',
+        'compare' => '=',
+        'value' => get_the_ID()
+      )
+    )
+  ));
+?>
+<span class="like-box" data-like="<?php if (isset($existQuery->posts[0]->ID)) echo $existQuery->posts[0]->ID; ?>" data-professor="<?php the_ID(); ?>" data-exists="<?php echo $existStatus; ?>">
+<i class="fa fa-heart-o" aria-hidden="true"></i>
+<i class="fa fa-heart" aria-hidden="true"></i>
+<span class="like-count"><?php echo $likeCount->found_posts; ?></span></span>
+    <?php the_content(); ?>
+</div>
+</div>
+```
