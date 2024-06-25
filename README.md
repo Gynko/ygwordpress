@@ -31,9 +31,9 @@
     - [3.5.19. Create new post type: professors](#3519-create-new-post-type-professors)
     - [3.5.20. Adding picture of the professor](#3520-adding-picture-of-the-professor)
     - [3.5.21. Cropping](#3521-cropping)
-    - [3.5.22. Page banner dynamic bg image -  and reusable code](#3522-page-banner-dynamic-bg-image----and-reusable-code)
+    - [3.5.22. Page banner dynamic bg image - and reusable code](#3522-page-banner-dynamic-bg-image---and-reusable-code)
     - [3.5.23. Get template part](#3523-get-template-part)
-    - [3.5.24. Create a function vs get\_template\_part?](#3524-create-a-function-vs-get_template_part)
+    - [3.5.24. Create a function vs get_template_part?](#3524-create-a-function-vs-get_template_part)
     - [3.5.25. Getting ready for Javascript](#3525-getting-ready-for-javascript)
     - [3.5.26. Campuses](#3526-campuses)
     - [3.5.27. Live search](#3527-live-search)
@@ -49,6 +49,7 @@
     - [3.5.37. Open registration](#3537-open-registration)
     - [3.5.38. The login](#3538-the-login)
     - [3.5.39. User generated content](#3539-user-generated-content)
+    - [Permissions and security](#permissions-and-security)
 
 # 1. Purpose
 
@@ -57,19 +58,22 @@ This is my personal website.
 I made it to learn myself Wordpress, and at the same time to a cool company in Tønsberg.
 
 # 2. Installation
+
 1. Installing Local
 
 # 3. Learning
 
 ## 3.1. PHP
+
 PHP is executed on the server.
+
 ```php
-<?php 
+<?php
     echo 2 + 2;
     $myname = "Yoann";
 ?>
 <h1>Hellooo <?php echo $myname ?></h1>
-<?php 
+<?php
 echo 5*5
 ?>
 <p>Not bad, <?php echo $myname ?></p>
@@ -95,6 +99,7 @@ echo 5*5
 ```
 
 Wordpress comes with its own set of functions, for example:
+
 ```php
 <h1><?php bloginfo("name"); ?></h1>
 <p><?php bloginfo("description");?></p>
@@ -114,9 +119,12 @@ Wordpress comes with its own set of functions, for example:
 ```
 
 ## 3.5. Introduction to Wordpress specific PHP
+
 ### 3.5.1. Posts, post, pages
+
 Here we get a hold of the posts and show the title and content.
 We make the title be a link so that the posts get their own single page.
+
 ```php
 <?php
     while(have_posts()){
@@ -124,22 +132,26 @@ We make the title be a link so that the posts get their own single page.
         <h2><a href="<?php the_permalink() ?>"><?php the_title()?></a></h2>
         <p><?php the_content()?></p>
         <hr>
-        <?php 
+        <?php
     }
 ?>
 ```
+
 But for the single page we need to create a file called single.php, and we can custom by for example removing the a tag
+
 ```php
 <?php
     while(have_posts()){
         the_post(); ?>
         <h2><?php the_title()?></h2>
         <p><?php the_content()?></p>
-        <?php 
+        <?php
     }
 ?>
 ```
+
 If we create a new page, we notice that the new page seem to be powered by the index.php template. But we can add a page.php
+
 ```php
 <?php
     while(have_posts()){
@@ -147,15 +159,17 @@ If we create a new page, we notice that the new page seem to be powered by the i
         <h1>This is a page</h1>
         <h2><?php the_title()?></h2>
         <p><?php the_content()?></p>
-        <?php 
+        <?php
     }
 ?>
 ```
 
 ### 3.5.2. Header and footer
-We create a header.php and footer.php. 
+
+We create a header.php and footer.php.
 
 header
+
 ```php
 <!DOCTYPE html>
 <head>
@@ -166,6 +180,7 @@ header
 ```
 
 functions.php
+
 ```php
 <?php
     function yoanngodiet_files(){
@@ -176,6 +191,7 @@ functions.php
 ```
 
 footer.php
+
 ```php
 <h1>Greetings from footer.php</h1>
 <?php wp_footer(); ?>
@@ -211,7 +227,6 @@ footer.php
 
 ### 3.5.4. Interior page template
 
-
 ### 3.5.5. Parent and children pages
 
 Create new page - page attributes - parent.
@@ -230,7 +245,6 @@ Conditional if the page has a parent page.
         }
     ?>
 ```
-
 
 ### 3.5.6. Menu of children page links
 
@@ -288,6 +302,7 @@ We need an associative array
 ### 3.5.7. Extra head tips
 
 Many new classes
+
 ```php
 <!DOCTYPE html>
 <html <?php language_attributes() ?>>
@@ -402,6 +417,7 @@ Also thick Display location
         </div>
       </div>
 ```
+
 Importantly, wordpress creates new classes along, that can be targeted in CSS
 
 If we don't have these new classes
@@ -415,6 +431,7 @@ Now in settings / reading, we can set a HomePage and a Posts Page
 Then a front-page.php
 
 Here the index.php for blog
+
 ```php
 <?php
 get_header();
@@ -544,6 +561,7 @@ while ($homepagePosts->have_posts()) {
 ### 3.5.13. Posts types : events
 
 By default there are 2 post types: posts and pages
+
 ```bash
 http://yoanngodiet.local/wp-admin/edit.php?post_type=page
 ```
@@ -762,6 +780,7 @@ $homepageEvents = new WP_Query(array(
 ```
 
 Removing past, we need meta query
+
 ```php
 <?php
 $today = date("Ymd");
@@ -812,7 +831,6 @@ add_action("pre_get_posts", "adjust_queries");
 New page in admin. Then page-past-events.php
 
 Pagination will work only with default queries that are tied to the url, so have to do this.
-
 
 ```php
 <?php
@@ -964,6 +982,7 @@ register_post_type("professor", array(
 
 1. Not adding an image block. We added before featured image / post thumbnails. Not there by default
 2. In functions .php:
+
 ```php
 function university_features()
 {
@@ -971,8 +990,10 @@ function university_features()
     add_theme_support("post-thumbnails");
 }
 ```
+
 3. It is now enabled for blog-posts, but not for custom-posts
 4. go to mu_plugins
+
 ```php
 register_post_type("professor", array(
     "show_in_rest" => true,
@@ -980,7 +1001,9 @@ register_post_type("professor", array(
 )
 );
 ```
+
 5. Wordpress creates automatically different size for the images that we upload - And we can ask wordpress to generate additional ones. In function.php:
+
 ```php
 function university_features()
 {
@@ -990,14 +1013,15 @@ function university_features()
     add_image_size("professorPortrait", 480, 650, true);
 }
 ```
+
 6. Not retroactive - a plugin can do this: "Regenerate thumbnails" and activate
 7. Tools > Regenerate thumbnails
 
-### 3.5.21. Cropping 
+### 3.5.21. Cropping
 
 By default, wordpress cuts from the middle, but we can have more control with plugin called
 
-### 3.5.22. Page banner dynamic bg image -  and reusable code
+### 3.5.22. Page banner dynamic bg image - and reusable code
 
 We cannot use the featured image. Would not work for the professor type because we can only have one featured image.
 
@@ -1021,6 +1045,7 @@ function university_features()
 ### 3.5.23. Get template part
 
 we create a new folder - template-parts, and a event.php with the code that repeats
+
 ```php
 <div class="event-summary">
     <a class="event-summary__date t-center" href="#">
@@ -1060,9 +1085,11 @@ wp_reset_postdata();
 ```
 
 Specialty name = second argument which allows dynamicity.
+
 ```php
 get_template_part("template-parts/content", get_post_type());
 ```
+
 So now in our folder template-parts, we name our file content-event and content-professors, with different content.
 
 ### 3.5.24. Create a function vs get_template_part?
@@ -1076,7 +1103,6 @@ If i want the duplicate code to be dynamic - we create a function. If duplicate 
 3. npm install
 4. npm run start
 5. npm run build: take all source code and bundles
-   
 
 ### 3.5.26. Campuses
 
@@ -1098,9 +1124,11 @@ register_post_type("campus", array(
     )
 ));
 ```
+
 then some posts
 
 then ACF:
+
 1. Map Location
 2. Type: Google Map field type
 3. required
@@ -1126,102 +1154,115 @@ Then we need an API key from Google
 
 https://developer.wordpress.org/rest-api/
 
-
 ```js
 class Search {
-    constructor(){
-        this.openButton = document.querySelector(".js-search-trigger");
-        this.closeButton = document.querySelector(".search-overlay__close");
-        this.searchOverlay = document.querySelector(".search-overlay");
-        this.searchField = document.querySelector("#search-term");
-        this.resultsDiv = document.querySelector("#search-overlay__results");
-        this.events();
-        this.isOverlayOpened = false;
+  constructor() {
+    this.openButton = document.querySelector(".js-search-trigger");
+    this.closeButton = document.querySelector(".search-overlay__close");
+    this.searchOverlay = document.querySelector(".search-overlay");
+    this.searchField = document.querySelector("#search-term");
+    this.resultsDiv = document.querySelector("#search-overlay__results");
+    this.events();
+    this.isOverlayOpened = false;
+    this.isSpinnerVisible = false;
+    this.typingTimer;
+    this.previousValue = "";
+  }
+
+  events() {
+    this.openButton.addEventListener("click", this.openOverlay.bind(this));
+    this.closeButton.addEventListener("click", this.closeOverlay.bind(this));
+    document.addEventListener("keydown", this.keyPressDispatcher.bind(this));
+    this.searchField.addEventListener("keyup", this.typingLogic.bind(this));
+  }
+
+  openOverlay() {
+    this.searchOverlay.classList.add("search-overlay--active");
+    document.body.classList.add("body-no-scroll");
+    this.isOverlayOpened = true;
+  }
+
+  closeOverlay() {
+    this.searchOverlay.classList.remove("search-overlay--active");
+    document.body.classList.remove("body-no-scroll");
+    this.isOverlayOpened = false;
+  }
+
+  keyPressDispatcher(event) {
+    if (event.key === "Escape" && this.isOverlayOpened) {
+      this.closeOverlay();
+    } else if (
+      (event.key === "s" || event.key === "S") &&
+      !this.isOverlayOpened
+    ) {
+      const activeElement = document.activeElement;
+      if (
+        activeElement.tagName !== "INPUT" &&
+        activeElement.tagName !== "TEXTAREA"
+      ) {
+        this.openOverlay();
+      }
+    }
+  }
+
+  typingLogic() {
+    if (this.searchField.value !== this.previousValue) {
+      clearTimeout(this.typingTimer);
+
+      if (this.searchField.value !== "") {
+        if (!this.isSpinnerVisible) {
+          this.resultsDiv.innerHTML = `<div class="spinner-loader"></div>`;
+          this.isSpinnerVisible = true;
+        }
+        this.typingTimer = setTimeout(this.getResults.bind(this), 1000);
+      } else {
+        this.resultsDiv.innerHTML = "";
         this.isSpinnerVisible = false;
-        this.typingTimer;
-        this.previousValue = "";
+      }
+      this.previousValue = this.searchField.value;
     }
+  }
 
-    events(){
-        this.openButton.addEventListener("click", this.openOverlay.bind(this));
-        this.closeButton.addEventListener("click", this.closeOverlay.bind(this));
-        document.addEventListener("keydown", this.keyPressDispatcher.bind(this));
-        this.searchField.addEventListener("keyup", this.typingLogic.bind(this));
-    }
-
-    openOverlay(){
-        this.searchOverlay.classList.add("search-overlay--active");
-        document.body.classList.add("body-no-scroll");
-        this.isOverlayOpened = true;
-    }
-
-    closeOverlay(){
-        this.searchOverlay.classList.remove("search-overlay--active");
-        document.body.classList.remove("body-no-scroll");
-        this.isOverlayOpened = false;
-    }
-
-    keyPressDispatcher(event){
-        if(event.key === "Escape" && this.isOverlayOpened){
-            this.closeOverlay();
-        } else if((event.key === "s" || event.key === "S") && !this.isOverlayOpened){
-            const activeElement = document.activeElement;
-            if (activeElement.tagName !== "INPUT" && activeElement.tagName !== "TEXTAREA") {
-                this.openOverlay();
-            }
+  getResults() {
+    fetch(
+      universityData.root_url +
+        "/wp-json/wp/v2/posts?search=" +
+        this.searchField.value
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok " + response.statusText);
         }
-    }
-
-    typingLogic(){
-        if (this.searchField.value !== this.previousValue){
-            clearTimeout(this.typingTimer);
-
-            if(this.searchField.value !== ""){
-                if(!this.isSpinnerVisible){
-                    this.resultsDiv.innerHTML = `<div class="spinner-loader"></div>`;
-                    this.isSpinnerVisible = true;
-                }
-                this.typingTimer = setTimeout(this.getResults.bind(this), 1000);
-            } else {
-                this.resultsDiv.innerHTML = "";
-                this.isSpinnerVisible = false;
-            }
-            this.previousValue = this.searchField.value;
-        }
-    }
-
-    getResults() {
-        fetch(universityData.root_url + "/wp-json/wp/v2/posts?search=" + this.searchField.value)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                return response.json();
-            })
-            .then(posts => {
-                if (posts.length > 0) {
-                    this.resultsDiv.innerHTML = posts.map(post => `
+        return response.json();
+      })
+      .then((posts) => {
+        if (posts.length > 0) {
+          this.resultsDiv.innerHTML = posts
+            .map(
+              (post) => `
                         <div class="post" style="background-color:pink">
                             <h1>${post.title.rendered}</h1>
                             <p>${post.content.rendered}</p>
                             <a href="${post.link}">${post.title.rendered}</a>
                         </div>
-                    `).join('');
-                    this.isSpinnerVisible = false;
-                } else {
-                    this.resultsDiv.innerHTML = "no matches found."
-                }
-            })
-            .catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-    }
-    
-    
+                    `
+            )
+            .join("");
+          this.isSpinnerVisible = false;
+        } else {
+          this.resultsDiv.innerHTML = "no matches found.";
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
+      });
+  }
 }
 
 export default Search;
-
 ```
 
 ```php
@@ -1247,7 +1288,7 @@ add_action("wp_enqueue_scripts", "yoanngodiet_files");
         const postTypes = ["posts", "pages"];
         const searchQuery = this.searchField.value;
         const results = [];
-      
+
         for (const type of postTypes) {
           try {
             const response = await fetch(
@@ -1262,7 +1303,7 @@ add_action("wp_enqueue_scripts", "yoanngodiet_files");
             console.error("There has been a problem with your fetch operation:", error);
           }
         }
-      
+
         if (results.length > 0) {
           this.resultsDiv.innerHTML = results
             .map(
@@ -1285,12 +1326,12 @@ add_action("wp_enqueue_scripts", "yoanngodiet_files");
         } else {
           this.resultsDiv.innerHTML = "no matches found.";
         }
-      
+
         this.isSpinnerVisible = false;
       }
 ```
 
-### 3.5.30. Search - Add Custom fields to data 
+### 3.5.30. Search - Add Custom fields to data
 
 By default, when we visit the page /post, we get the 10 first posts. But what if it is not what we want and would like to have an additional custom field?
 
@@ -1329,7 +1370,7 @@ Process:
 1. Create a helpers function folder
 2. Require it in functions.php: require get_theme_file_path("/helpers/search-route.php");
 
-register_rest_route: 
+register_rest_route:
 
 First argument is the namespace. If we look at the API url for a given posttype, the namespace of the url is wp, which indicates that it is part of the default part of the core of wordpress - which we dont want to use
 
@@ -1420,99 +1461,148 @@ Back in our Search.js
 
 ```js
 class Search {
-    // 1. describe and create/initiate our object
-    constructor() {
-      this.addSearchHTML();
-      this.resultsDiv = document.getElementById("search-overlay__results");
-      this.openButtons = document.querySelectorAll(".js-search-trigger");
-      this.closeButton = document.querySelector(".search-overlay__close");
-      this.searchOverlay = document.querySelector(".search-overlay");
-      this.searchField = document.getElementById("search-term");
-      this.events();
-      this.isOverlayOpen = false;
-      this.isSpinnerVisible = false;
-      this.previousValue = "";
-      this.typingTimer = null;
-    }
-  
-    // 2. events
-    events() {
-      this.openButtons.forEach(button => button.addEventListener("click", this.openOverlay.bind(this)));
-      this.closeButton.addEventListener("click", this.closeOverlay.bind(this));
-      document.addEventListener("keydown", this.keyPressDispatcher.bind(this));
-      this.searchField.addEventListener("keyup", this.typingLogic.bind(this));
-    }
-  
-    // 3. methods (function, action...)
-    typingLogic() {
-      if (this.searchField.value !== this.previousValue) {
-        clearTimeout(this.typingTimer);
-  
-        if (this.searchField.value) {
-          if (!this.isSpinnerVisible) {
-            this.resultsDiv.innerHTML = '<div class="spinner-loader"></div>';
-            this.isSpinnerVisible = true;
-          }
-          this.typingTimer = setTimeout(this.getResults.bind(this), 750);
-        } else {
-          this.resultsDiv.innerHTML = "";
-          this.isSpinnerVisible = false;
+  // 1. describe and create/initiate our object
+  constructor() {
+    this.addSearchHTML();
+    this.resultsDiv = document.getElementById("search-overlay__results");
+    this.openButtons = document.querySelectorAll(".js-search-trigger");
+    this.closeButton = document.querySelector(".search-overlay__close");
+    this.searchOverlay = document.querySelector(".search-overlay");
+    this.searchField = document.getElementById("search-term");
+    this.events();
+    this.isOverlayOpen = false;
+    this.isSpinnerVisible = false;
+    this.previousValue = "";
+    this.typingTimer = null;
+  }
+
+  // 2. events
+  events() {
+    this.openButtons.forEach((button) =>
+      button.addEventListener("click", this.openOverlay.bind(this))
+    );
+    this.closeButton.addEventListener("click", this.closeOverlay.bind(this));
+    document.addEventListener("keydown", this.keyPressDispatcher.bind(this));
+    this.searchField.addEventListener("keyup", this.typingLogic.bind(this));
+  }
+
+  // 3. methods (function, action...)
+  typingLogic() {
+    if (this.searchField.value !== this.previousValue) {
+      clearTimeout(this.typingTimer);
+
+      if (this.searchField.value) {
+        if (!this.isSpinnerVisible) {
+          this.resultsDiv.innerHTML = '<div class="spinner-loader"></div>';
+          this.isSpinnerVisible = true;
         }
+        this.typingTimer = setTimeout(this.getResults.bind(this), 750);
+      } else {
+        this.resultsDiv.innerHTML = "";
+        this.isSpinnerVisible = false;
       }
-  
-      this.previousValue = this.searchField.value;
     }
-  
-    getResults() {
-      fetch(`${universityData.root_url}/wp-json/university/v1/search?term=${this.searchField.value}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(results => {
-          results.generalInfo = results.generalInfo || [];
-          results.professors = results.professors || [];
-          results.programs = results.programs || [];
-          results.campuses = results.campuses || [];
-          results.events = results.events || [];
-  
-          this.resultsDiv.innerHTML = `
+
+    this.previousValue = this.searchField.value;
+  }
+
+  getResults() {
+    fetch(
+      `${universityData.root_url}/wp-json/university/v1/search?term=${this.searchField.value}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((results) => {
+        results.generalInfo = results.generalInfo || [];
+        results.professors = results.professors || [];
+        results.programs = results.programs || [];
+        results.campuses = results.campuses || [];
+        results.events = results.events || [];
+
+        this.resultsDiv.innerHTML = `
             <div class="row">
               <div class="one-third">
                 <h2 class="search-overlay__section-title">General Information</h2>
-                ${results.generalInfo.length ? '<ul class="link-list min-list">' : "<p>No general information matches that search.</p>"}
-                  ${results.generalInfo.map(item => `<li><a href="${item.permalink}">${item.title}</a> ${item.postType === "post" ? `by ${item.authorName}` : ""}</li>`).join("")}
+                ${
+                  results.generalInfo.length
+                    ? '<ul class="link-list min-list">'
+                    : "<p>No general information matches that search.</p>"
+                }
+                  ${results.generalInfo
+                    .map(
+                      (item) =>
+                        `<li><a href="${item.permalink}">${item.title}</a> ${
+                          item.postType === "post"
+                            ? `by ${item.authorName}`
+                            : ""
+                        }</li>`
+                    )
+                    .join("")}
                 ${results.generalInfo.length ? "</ul>" : ""}
               </div>
               <div class="one-third">
                 <h2 class="search-overlay__section-title">Programs</h2>
-                ${results.programs.length ? '<ul class="link-list min-list">' : `<p>No programs match that search. <a href="${universityData.root_url}/programs">View all programs</a></p>`}
-                  ${results.programs.map(item => `<li><a href="${item.permalink}">${item.title}</a></li>`).join("")}
+                ${
+                  results.programs.length
+                    ? '<ul class="link-list min-list">'
+                    : `<p>No programs match that search. <a href="${universityData.root_url}/programs">View all programs</a></p>`
+                }
+                  ${results.programs
+                    .map(
+                      (item) =>
+                        `<li><a href="${item.permalink}">${item.title}</a></li>`
+                    )
+                    .join("")}
                 ${results.programs.length ? "</ul>" : ""}
   
                 <h2 class="search-overlay__section-title">Professors</h2>
-                ${results.professors.length ? '<ul class="professor-cards">' : `<p>No professors match that search.</p>`}
-                  ${results.professors.map(item => `
+                ${
+                  results.professors.length
+                    ? '<ul class="professor-cards">'
+                    : `<p>No professors match that search.</p>`
+                }
+                  ${results.professors
+                    .map(
+                      (item) => `
                     <li class="professor-card__list-item">
                       <a class="professor-card" href="${item.permalink}">
                         <img class="professor-card__image" src="${item.image}">
                         <span class="professor-card__name">${item.title}</span>
                       </a>
                     </li>
-                  `).join("")}
+                  `
+                    )
+                    .join("")}
                 ${results.professors.length ? "</ul>" : ""}
               </div>
               <div class="one-third">
                 <h2 class="search-overlay__section-title">Campuses</h2>
-                ${results.campuses.length ? '<ul class="link-list min-list">' : `<p>No campuses match that search. <a href="${universityData.root_url}/campuses">View all campuses</a></p>`}
-                  ${results.campuses.map(item => `<li><a href="${item.permalink}">${item.title}</a></li>`).join("")}
+                ${
+                  results.campuses.length
+                    ? '<ul class="link-list min-list">'
+                    : `<p>No campuses match that search. <a href="${universityData.root_url}/campuses">View all campuses</a></p>`
+                }
+                  ${results.campuses
+                    .map(
+                      (item) =>
+                        `<li><a href="${item.permalink}">${item.title}</a></li>`
+                    )
+                    .join("")}
                 ${results.campuses.length ? "</ul>" : ""}
   
                 <h2 class="search-overlay__section-title">Events</h2>
-                ${results.events.length ? "" : `<p>No events match that search. <a href="${universityData.root_url}/events">View all events</a></p>`}
-                  ${results.events.map(item => `
+                ${
+                  results.events.length
+                    ? ""
+                    : `<p>No events match that search. <a href="${universityData.root_url}/events">View all events</a></p>`
+                }
+                  ${results.events
+                    .map(
+                      (item) => `
                     <div class="event-summary">
                       <a class="event-summary__date t-center" href="${item.permalink}">
                         <span class="event-summary__month">${item.month}</span>
@@ -1523,43 +1613,51 @@ class Search {
                         <p>${item.description} <a href="${item.permalink}" class="nu gray">Learn more</a></p>
                       </div>
                     </div>
-                  `).join("")}
+                  `
+                    )
+                    .join("")}
               </div>
             </div>
           `;
-          this.isSpinnerVisible = false;
-        })
-        .catch(error => console.error('Error fetching results:', error));
+        this.isSpinnerVisible = false;
+      })
+      .catch((error) => console.error("Error fetching results:", error));
+  }
+
+  keyPressDispatcher(e) {
+    if (
+      e.keyCode === 83 &&
+      !this.isOverlayOpen &&
+      !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+    ) {
+      this.openOverlay();
     }
-  
-    keyPressDispatcher(e) {
-      if (e.keyCode === 83 && !this.isOverlayOpen && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
-        this.openOverlay();
-      }
-  
-      if (e.keyCode === 27 && this.isOverlayOpen) {
-        this.closeOverlay();
-      }
+
+    if (e.keyCode === 27 && this.isOverlayOpen) {
+      this.closeOverlay();
     }
-  
-    openOverlay() {
-      this.searchOverlay.classList.add("search-overlay--active");
-      document.body.classList.add("body-no-scroll");
-      this.searchField.value = "";
-      setTimeout(() => this.searchField.focus(), 301);
-      console.log("Our open method just ran!");
-      this.isOverlayOpen = true;
-    }
-  
-    closeOverlay() {
-      this.searchOverlay.classList.remove("search-overlay--active");
-      document.body.classList.remove("body-no-scroll");
-      console.log("Our close method just ran!");
-      this.isOverlayOpen = false;
-    }
-  
-    addSearchHTML() {
-      document.body.insertAdjacentHTML("beforeend", `
+  }
+
+  openOverlay() {
+    this.searchOverlay.classList.add("search-overlay--active");
+    document.body.classList.add("body-no-scroll");
+    this.searchField.value = "";
+    setTimeout(() => this.searchField.focus(), 301);
+    console.log("Our open method just ran!");
+    this.isOverlayOpen = true;
+  }
+
+  closeOverlay() {
+    this.searchOverlay.classList.remove("search-overlay--active");
+    document.body.classList.remove("body-no-scroll");
+    console.log("Our close method just ran!");
+    this.isOverlayOpen = false;
+  }
+
+  addSearchHTML() {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `
         <div class="search-overlay">
           <div class="search-overlay__top">
             <div class="container">
@@ -1572,12 +1670,12 @@ class Search {
             <div id="search-overlay__results"></div>
           </div>
         </div>
-      `);
-    }
+      `
+    );
   }
-  
-  export default Search;
-  
+}
+
+export default Search;
 ```
 
 and search-route.php
@@ -2053,6 +2151,7 @@ add_action("login_enqueue_scripts", "ourloginCSS");
 ```
 
 To change the "powered by wordpress":
+
 ```php
 add_filter("login_headertitle", "ourLoginTitle");
 function ourLoginTitle()
@@ -2066,6 +2165,7 @@ function ourLoginTitle()
 Create a My notes page in Pages. Find slug. Create page-my-notes, page-slug.
 
 Update header
+
 ```php
 <a href="<?php echo esc_url(site_url("/my-notes")); ?>" class="btn btn--small btn--orange float-left push-right">My notes</a>
 ```
@@ -2156,3 +2256,251 @@ get_footer();
 ?>
 ```
 
+In our Js file MyNotes.js, we create a delete function. We need to add in the request the nonce.
+
+```php
+function yoanngodiet_files()
+{
+    wp_enqueue_script("main_yoann", get_theme_file_uri("/build/index.js"), array("jquery"), "1.0", true);
+    wp_enqueue_style("google_fonts", "//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i");
+    wp_enqueue_style("font_awesome", "//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css");
+    wp_enqueue_style("main_styles", get_theme_file_uri("/build/style-index.css"));
+    wp_enqueue_style("extra_styles", get_theme_file_uri("/build/index.css"));
+
+    wp_localize_script("main_yoann", "universityData", array(
+        "root_url" => get_site_url(),
+        "nonce" => wp_create_nonce("wp_rest")
+    ));
+}
+add_action("wp_enqueue_scripts", "yoanngodiet_files");
+```
+
+Now we need to dynamically set the post number to be able to delete it.
+
+We can set this in the page-my-notes.php
+
+```php
+<li data-id="<?php the_ID();?>">
+```
+
+```js
+class MyNotes {
+  constructor() {
+    this.events();
+  }
+
+  events() {
+    document.getElementById("my-notes").addEventListener("click", (event) => {
+      if (event.target.classList.contains("delete-note")) {
+        this.deleteNote.call(this, event);
+      } else if (event.target.classList.contains("edit-note")) {
+        this.editNote.call(this, event);
+      } else if (event.target.classList.contains("update-note")) {
+        this.updateNote.call(this, event);
+      }
+    });
+
+    document
+      .querySelector(".submit-note")
+      .addEventListener("click", this.createNote.bind(this));
+  }
+
+  createNote(event) {
+    const newPost = {
+      title: document.querySelector(".new-note-title").value,
+      content: document.querySelector(".new-note-body").value,
+      status: "publish",
+    };
+
+    fetch(`${universityData.root_url}/wp-json/wp/v2/note/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-WP-Nonce": universityData.nonce,
+      },
+      body: JSON.stringify(newPost),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        document.querySelector(".new-note-title").value = "";
+        document.querySelector(".new-note-body").value = "";
+        const newNoteHTML = `
+        <li data-id="${data.id}">
+          <input readonly class="note-title-field" value="${data.title.raw}">
+          <span class="edit-note"><i class="fa fa-pencil" aria-hidden="true"></i>Edit</span>
+          <span class="delete-note"><i class="fa fa-trash-o" aria-hidden="true"></i>Delete</span>
+          <textarea readonly class="note-body-field">${data.content.raw}</textarea>
+          <span class="update-note btn btn--blue btn--small"><i class="fa fa-arrow-right" aria-hidden="true"></i>Save</span>
+        </li>
+      `;
+        const myNotes = document.getElementById("my-notes");
+        myNotes.insertAdjacentHTML("afterbegin", newNoteHTML);
+        const newNote = myNotes.firstElementChild;
+        newNote.style.display = "none";
+        newNote.style.display = "block";
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  updateNote(event) {
+    const thisNote = event.target.closest("li");
+    const updatedPost = {
+      title: thisNote.querySelector(".note-title-field").value,
+      content: thisNote.querySelector(".note-body-field").value,
+    };
+
+    fetch(
+      `${universityData.root_url}/wp-json/wp/v2/note/${thisNote.getAttribute(
+        "data-id"
+      )}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-WP-Nonce": universityData.nonce,
+        },
+        body: JSON.stringify(updatedPost),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        this.makeNoteReadonly(thisNote);
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  editNote(event) {
+    const thisNote = event.target.closest("li");
+    if (thisNote.getAttribute("data-state") === "editable") {
+      this.makeNoteReadonly(thisNote);
+    } else {
+      this.makeNoteEditable(thisNote);
+    }
+  }
+
+  deleteNote(event) {
+    const thisNote = event.target.closest("li");
+
+    fetch(
+      `${universityData.root_url}/wp-json/wp/v2/note/${thisNote.getAttribute(
+        "data-id"
+      )}`,
+      {
+        method: "DELETE",
+        headers: {
+          "X-WP-Nonce": universityData.nonce,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        thisNote.style.display = "none";
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+  makeNoteEditable(thisNote) {
+    thisNote
+      .querySelectorAll(".note-title-field, .note-body-field")
+      .forEach((field) => {
+        field.removeAttribute("readonly");
+        field.classList.add("note-active-field");
+      });
+
+    const editButton = thisNote.querySelector(".edit-note");
+    editButton.innerHTML =
+      '<i class="fa fa-times" aria-hidden="true"></i>Cancel';
+
+    thisNote
+      .querySelector(".update-note")
+      .classList.add("update-note--visible");
+    thisNote.setAttribute("data-state", "editable");
+  }
+
+  makeNoteReadonly(thisNote) {
+    thisNote
+      .querySelectorAll(".note-title-field, .note-body-field")
+      .forEach((field) => {
+        field.setAttribute("readonly", "readonly");
+        field.classList.remove("note-active-field");
+      });
+
+    const editButton = thisNote.querySelector(".edit-note");
+    editButton.innerHTML =
+      '<i class="fa fa-pencil" aria-hidden="true"></i>Edit';
+
+    thisNote
+      .querySelector(".update-note")
+      .classList.remove("update-note--visible");
+    thisNote.setAttribute("data-state", "cancel");
+  }
+}
+
+export default MyNotes;
+```
+
+### Permissions and security
+
+We give our subscribers the possibility to add notes and preserve security and performance.
+
+Currently, when subscriber tries we get a forbidden.
+
+We need to add capability type and map meta cap
+
+```php
+register_post_type("note", array(
+    "capability_type" => "note",
+    "map_meta_cap" => true,
+    "show_in_rest" => true,
+    "supports" => array("title", "editor", "excerpt"),
+    "public" => false,
+    "show_ui" => true,
+    "menu_icon" => "dashicons-welcome-write-blog",
+    "labels" => array(
+        "name" => "Notes",
+        "add_new_item" => "Add new Note",
+        "add_new" => "Add new Note",
+        "edit_item" => "Edit Note",
+        "all_items" => "All Notes",
+        "singular_name" => "Note",
+    )
+));
+```
+
+Now in Members / roles:
+
+1. We need to give subscriber access to notes - create publish delete
+2. We need to give admin the permissions too
+
+We want them to be private too, so only owner can see them, amd by default anyone can visit the endpoint and see the posts!
+
+```js
+  createNote(event) {
+    var newPost = {
+      title: $(".new-note-title").val(),
+      content: $(".new-note-body").val(),
+      status: "publish",
+    };
+```
+
+Setting status to private is not enough, this has to be server side.
+
+```php
+add_filter("wp_insert_post_data", "makeNotePrivate");
+function makeNotePrivate($data){
+    if($data["post_type"] == "note" and $data["post_status"] != "trash"){
+        $data["post_status"] = "private";
+    }
+
+return $data;
+}
+```

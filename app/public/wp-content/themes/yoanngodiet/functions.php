@@ -52,6 +52,7 @@ function yoanngodiet_files()
 
     wp_localize_script("main_yoann", "universityData", array(
         "root_url" => get_site_url(),
+        "nonce" => wp_create_nonce("wp_rest")
     ));
 }
 add_action("wp_enqueue_scripts", "yoanngodiet_files");
@@ -135,4 +136,14 @@ add_filter("login_headertitle", "ourLoginTitle");
 function ourLoginTitle()
 {
     return get_bloginfo("name");
+}
+
+
+add_filter("wp_insert_post_data", "makeNotePrivate");
+function makeNotePrivate($data){
+    if($data["post_type"] == "note" and $data["post_status"] != "trash"){
+        $data["post_status"] = "private";
+    }
+    
+return $data;
 }

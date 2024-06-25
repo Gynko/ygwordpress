@@ -1,5 +1,4 @@
 <?php
-
 function university_post_types()
 {
     // Event post types
@@ -21,7 +20,6 @@ function university_post_types()
             "singular_name" => "Event",
         )
     ));
-
     // Program post types
     register_post_type("program", array(
         "show_in_rest" => true,
@@ -76,6 +74,8 @@ function university_post_types()
     ));
 
     register_post_type("note", array(
+        "capability_type" => "note",
+        "map_meta_cap" => true,
         "show_in_rest" => true,
         "supports" => array("title", "editor", "excerpt"),
         "public" => false,
