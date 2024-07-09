@@ -60,6 +60,7 @@
     - [3.5.46. Creating custom POST and DELETE endpoints](#3546-creating-custom-post-and-delete-endpoints)
     - [3.5.47. Enforce limit of one like per user/teacher - being logged in - permissions](#3547-enforce-limit-of-one-like-per-userteacher---being-logged-in---permissions)
 - [4. Wordpress plugins development](#4-wordpress-plugins-development)
+  - [4.1. Adding settings page](#41-adding-settings-page)
 
 # 1. Purpose
 
@@ -3061,14 +3062,28 @@ export default Like;
 
 ```php
 <?php
-
 /*
-    Plugin Name: our test plugin
+    Plugin Name: Our test plugin
     Description: This is our first attempt on writing a custom plugin in WordPress
     Version: 1.0
     Authos: Yoann
     Author URI: http://yoann.com
 */
 
-?>
+add_filter("the_content", "addToEndOfPost");
+function addToEndOfPost($content){
+  return $content . '<p>My name is Yooann </p>';
+}
 ```
+
+```php
+add_filter("the_content", "addToEndOfPost");
+function addToEndOfPost($content){
+    if(is_single() && is_main_query()){
+        return $content . '<p>My name is Yooann </p>';
+    }
+        return $content;
+}
+```
+
+## 4.1. Adding settings page
