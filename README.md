@@ -60,7 +60,8 @@
     - [3.5.46. Creating custom POST and DELETE endpoints](#3546-creating-custom-post-and-delete-endpoints)
     - [3.5.47. Enforce limit of one like per user/teacher - being logged in - permissions](#3547-enforce-limit-of-one-like-per-userteacher---being-logged-in---permissions)
 - [4. Wordpress plugins development](#4-wordpress-plugins-development)
-  - [4.1. Adding settings page](#41-adding-settings-page)
+  - [4.1. Base setup](#41-base-setup)
+  - [4.2. Adding settings page](#42-adding-settings-page)
 
 # 1. Purpose
 
@@ -3057,6 +3058,8 @@ export default Like;
 
 # 4. Wordpress plugins development
 
+## 4.1. Base setup
+
 1. Create new folder in wp-content / plugins / new folder. Unique name in case of publishing!
 2. php file with relevant name
 
@@ -3086,4 +3089,4 @@ function addToEndOfPost($content){
 }
 ```
 
-## 4.1. Adding settings page
+## 4.2. Adding settings page

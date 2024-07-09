@@ -9,10 +9,7 @@
     
 */
 
-add_filter("the_content", "addToEndOfPost");
-function addToEndOfPost($content){
-    if(is_single() && is_main_query()){
-        return $content . '<p>My name is Yooann </p>';
-    } 
-        return $content;
+add_action('admin_menu', 'ourPluginSettingsMenu');
+function ourPluginSettingsMenu(){
+        add_options_page( 'Test Plugin Page', 'Test Plugin', 'manage_options', 'test-plugin', 'test_init' );
 }
