@@ -33,7 +33,7 @@
     - [3.5.21. Cropping](#3521-cropping)
     - [3.5.22. Page banner dynamic bg image - and reusable code](#3522-page-banner-dynamic-bg-image---and-reusable-code)
     - [3.5.23. Get template part](#3523-get-template-part)
-    - [3.5.24. Create a function vs get\_template\_part?](#3524-create-a-function-vs-get_template_part)
+    - [3.5.24. Create a function vs get_template_part?](#3524-create-a-function-vs-get_template_part)
     - [3.5.25. Getting ready for Javascript](#3525-getting-ready-for-javascript)
     - [3.5.26. Campuses](#3526-campuses)
     - [3.5.27. Live search](#3527-live-search)
@@ -57,6 +57,9 @@
     - [3.5.43. Per user post limit](#3543-per-user-post-limit)
     - [3.5.44. Final code without jquery](#3544-final-code-without-jquery)
     - [3.5.45. Let user like or heart a professor](#3545-let-user-like-or-heart-a-professor)
+    - [3.5.46. Creating custom POST and DELETE endpoints](#3546-creating-custom-post-and-delete-endpoints)
+    - [3.5.47. Enforce limit of one like per user/teacher - being logged in - permissions](#3547-enforce-limit-of-one-like-per-userteacher---being-logged-in---permissions)
+- [4. Wordpress plugins development](#4-wordpress-plugins-development)
 
 # 1. Purpose
 
@@ -2845,3 +2848,210 @@ http://yoanngodiet.local/wp-admin/post.php?post=69&action=edit
 </div>
 </div>
 ```
+
+### 3.5.46. Creating custom POST and DELETE endpoints
+
+The reason as to why we do this = X
+
+```php
+<?php
+
+add_action("rest_api_init", "universityLikesRoutes");
+function universityLikesRoutes(){
+    register_rest_route("university/v1", "manageLike", array(
+        "methods" => "POST",
+        "callback" => "createLike"
+    ));
+    register_rest_route("university/v1", "manageLike", array(
+        "methods" => "DELETE",
+        "callback" => "deleteLike"
+    ));
+}
+
+function createLike($data){
+    $professor = sanitize_text_field($data["professorId"]);
+    wp_insert_post(array(
+        "post_type" => "like",
+        "post_status" => "publish",
+        "post_title" => "Our php create post test",
+        "meta_input" => array(
+            "liked_professor_id" => $professor
+        )
+    ));
+
+}
+
+function deleteLike(){
+    return "Deleting a like";
+}
+```
+
+and
+
+```js
+class Like {
+  constructor() {
+    this.events();
+  }
+
+  events() {
+    document.querySelectorAll(".like-box").forEach((likeBox) => {
+      likeBox.addEventListener("click", this.ourClickDispatcher.bind(this));
+    });
+  }
+
+  ourClickDispatcher(event) {
+    const currentLikeBox = event.target.closest(".like-box");
+
+    if (currentLikeBox.dataset.exists === "yes") {
+      this.deleteLike(currentLikeBox);
+    } else {
+      this.createLike(currentLikeBox);
+    }
+  }
+
+  async createLike(currentLikeBox) {
+    try {
+      const response = await fetch(
+        `${universityData.root_url}/wp-json/university/v1/manageLike`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            professorId: currentLikeBox.dataset.professor,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      // Update the DOM or handle the response as needed
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  async deleteLike(currentLikeBox) {
+    try {
+      const response = await fetch(
+        `${universityData.root_url}/wp-json/university/v1/manageLike`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      // Update the DOM or handle the response as needed
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+}
+
+export default Like;
+```
+
+### 3.5.47. Enforce limit of one like per user/teacher - being logged in - permissions
+
+```js
+class Like {
+  constructor() {
+    this.events();
+  }
+
+  events() {
+    document.querySelectorAll(".like-box").forEach((likeBox) => {
+      likeBox.addEventListener("click", this.ourClickDispatcher.bind(this));
+    });
+  }
+
+  ourClickDispatcher(event) {
+    const currentLikeBox = event.target.closest(".like-box");
+
+    if (currentLikeBox.getAttribute("data-exists") === "yes") {
+      this.deleteLike(currentLikeBox);
+    } else {
+      this.createLike(currentLikeBox);
+    }
+  }
+
+  async createLike(currentLikeBox) {
+    try {
+      const response = await fetch(
+        `${universityData.root_url}/wp-json/university/v1/manageLike`,
+        {
+          method: "POST",
+          headers: {
+            "X-WP-Nonce": universityData.nonce,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            professorId: currentLikeBox.dataset.professor,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      currentLikeBox.setAttribute("data-exists", "yes");
+      let likeCount = parseInt(
+        currentLikeBox.querySelector(".like-count").innerHTML,
+        10
+      );
+      likeCount++;
+      currentLikeBox.querySelector(".like-count").innerHTML = likeCount;
+      currentLikeBox.setAttribute("data-like", data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async deleteLike(currentLikeBox) {
+    try {
+      const response = await fetch(
+        `${universityData.root_url}/wp-json/university/v1/manageLike`,
+        {
+          method: "DELETE",
+          headers: {
+            "X-WP-Nonce": universityData.nonce,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            like: currentLikeBox.getAttribute("data-like"),
+          }),
+        }
+      );
+
+      await response.json();
+      currentLikeBox.setAttribute("data-exists", "no");
+      let likeCount = parseInt(
+        currentLikeBox.querySelector(".like-count").innerHTML,
+        10
+      );
+      likeCount--;
+      currentLikeBox.querySelector(".like-count").innerHTML = likeCount;
+      currentLikeBox.setAttribute("data-like", "");
+    } catch (error) {
+      console.error(error);
+    }
+  }
+}
+
+export default Like;
+```
+
+# 4. Wordpress plugins development
