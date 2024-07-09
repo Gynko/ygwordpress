@@ -3055,3 +3055,20 @@ export default Like;
 ```
 
 # 4. Wordpress plugins development
+
+1. Create new folder in wp-content / plugins / new folder. Unique name in case of publishing!
+2. php file with relevant name
+
+```php
+<?php
+
+/*
+    Plugin Name: our test plugin
+    Description: This is our first attempt on writing a custom plugin in WordPress
+    Version: 1.0
+    Authos: Yoann
+    Author URI: http://yoann.com
+*/
+
+?>
+```
