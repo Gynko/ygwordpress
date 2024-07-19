@@ -9,7 +9,18 @@
     
 */
 
-add_action('admin_menu', 'ourPluginSettingsMenu');
-function ourPluginSettingsMenu(){
-        add_options_page( 'Test Plugin Page', 'Test Plugin', 'manage_options', 'test-plugin', 'test_init' );
+class WordCountAndTimePlugin{
+    function __construct(){
+        add_action('admin_menu', 'ourPluginSettingsMenu');
+    }
+
+    function ourPluginSettingsMenu(){
+        add_options_page( 'Word count settings', 'Word count', "manage_options", 'word-count-settings', 'OurSettingsPageHTML');
 }
+
+    function OurSettingsPageHTML(){
+        echo "<h1>Word count settings</h1>";
+    }
+}
+
+$wordCountAndTimePlugin = new WordCountAndTimePlugin();
